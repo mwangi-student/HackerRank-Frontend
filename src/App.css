@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  font-family: "open sans", sans-serif;
+}
+
+ul li a {
+  text-decoration: none;
+}
+li {
+  list-style: none;
+}
+
+.navbar {
+  background-color: #0e141e;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 30px;
+}
+
+.nav-link-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.nav-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.nav-item {
+  margin-right: 10px;
+  color: #b7c9cc;
+}
+
+.nav-heading {
+  font-weight: 600;
+  size: 16px;
+  line-height: 20px;
+  color: white;
+}
+
+.nav-links {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 60px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.active {
+  color: white;
+  padding: 16px 0px;
+  border-bottom: 4px solid #2ec866;
+}
+
+.nav-buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.side-buttons-container {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  width: 240px;
+  height: 35px;
+  border-radius: 5px;
+  background-color: #39424e;
+  border: 2px solid #479ecc;
+}
+
+.search-box {
+  padding-left: 25px;
+  width: inherit;
+  height: inherit;
+  border: none;
+  background: url(/search.svg) no-repeat left;
+  background-size: 25px;
+  /* color: white; */
+}
+
+.btn-developers {
+  font-weight: 600;
+  size: 13px;
+  line-height: 19.2px;
+  color: #f3f7f7;
+}
+
+.btn {
+  width: 80px;
+  height: 32px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  text-align: center;
+  line-height: 20px;
+  size: 13px;
+}
+
+.btn-login {
+  color: rgb(0, 0, 0);
+  background-color: #ffffff;
+}
+
+.btn-signup {
+  color: white;
+  background-color: #068932;
+}
+
+.header-breadcrumbs {
+  margin: 30px 0px 20px 40px;
+  width: max-width;
+  height: max-content;
+  border: 0px 0px 1px 0px solid #eaeaec;
+}
+
+.breadcrumbs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.breadcrumb-item {
+  height: 18px;
+  color: #b7c9cc;
+}
+
+.banner-container {
+  background: linear-gradient(140deg, #193b84 15%, #037bc1);
+  color: white;
+  display: flex;
+  padding: 10px 20px;
+}
+
+.banner-cards-container {
+  width: 100%;
+  padding: 0px 20px;
+  margin: 20px 0px;
+}
+
+.banner-heading {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  margin-bottom: 20px;
+}
+
+.banner-description {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 20px;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 30px;
+}
+
+.card {
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 30px;
+  margin-bottom: 20px;
+  min-height: 190px;
+  width: 360px;
+  border: 1px solid #eaeaec;
+  border-radius: 8px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-heading {
+  padding: 0px 0px 20px 0px;
+  color: #0e141e;
+  size: 26px;
+  font-weight: 700;
+  line-height: 36.4px;
+}
+
+.certify-heading {
+  padding: 30px 0px;
+  margin-left: 40px;
+}
+
+.skills-btn {
+  width: 90px;
+  height: 36px;
+  border-radius: 4px;
+  size: 12px;
+  line-height: 12px;
+  color: #3a3a40;
+  background-color: #f4f4f5;
+}
+
+.role-img {
+  position: absolute;
+  width: 122.7px;
+  height: 122.7px;
+  top: 63.32px;
+  left: 229.14px;
+  opacity: 10%;
+}
+
+.skill-img {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  top: 29.32px;
+  left: 234.34px;
+  opacity: 10%;
+}
+
+.footer-items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 30px 0px 0px 0px;
+}
+
+.footer-items a {
+  color: #097bbf;
+}
+
+.footer-items li {
+  display: inline;
+  padding: 0px 10px;
+  border-left: solid 1px #b7c9cc;
+}
+
+.footer-items li:first-child {
+  border-left: none;
+}
+
+@media screen and (max-width: 690px) {
+  .banner-container {
+    flex-direction: column;
+    margin-bottom: 0px;
+  }
+  .banner-cards-container {
+    margin: 0px;
+  }
+  .banner-heading {
+    margin-bottom: 0px;
+  }
+  .cards-container {
+    flex-direction: column;
+  }
+  .card {
+    width: 100%;
+  }
+  .footer-items {
+    padding: 10px 5px;
+    size: 10px;
+    font-size: smaller;
+    text-align: center;
+  }
+  .nav-buttons-container {
+    display: none;
+  }
+  .role-img {
+    left: auto;
+    right: 10px;
+  }
+  .skill-img {
+    left: auto;
+    right: -20px;
+  }
+}
