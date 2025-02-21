@@ -1,6 +1,6 @@
 import { Footer, Header, Navbar } from "../components/index";
 
-function Home() {
+export default function Leaderboard() {
   return (
     <>
       <Navbar />
@@ -10,5 +10,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

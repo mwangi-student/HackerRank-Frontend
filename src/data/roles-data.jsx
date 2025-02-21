@@ -1,18 +1,29 @@
 // Data: Roles Data
 export const RolesData = [
   {
-    heading: "Frontend Developer (React) ",
+    heading: "Cisco Hack to Secure Challenge",
+    date: "Event ended on 26th March 2023",
     img: "src\\assets\\FrontendDeveloperReact.svg",
     alt: "frontend-dev"
   },
   {
-    heading: "Software Engineer ",
+    heading: "DTCC CODE-A-THON",
+    date: "Event ended on 26th March 2023",
     img: "src\\assets\\SoftwareEngineer.svg",
     alt: "frontend-dev"
   },
   {
-    heading: "Software Engineer Intern ",
+    heading: "ServiceNow Tech Hiring Challenge",
+    date: "Event ended on 26th March 2023",
+    img: "src\\assets\\FrontendDeveloperReact.svg",
+    alt: "frontend-dev"
+  },
+  {
+    heading: "Akamai Edge Hackathon",
+    date: "Event ended on 26th March 2023",
     img: "src\\assets\\FrontendDeveloperReact.svg",
     alt: "frontend-dev"
   }
 ];
+
+// Akamai Edge Hackathon 2022
