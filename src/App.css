@@ -6,7 +6,20 @@
   padding: 0px;
   margin: 0px;
   box-sizing: border-box;
-  font-family: "open sans", sans-serif;
+}
+
+/* .montserrat-body {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+} */
+
+.montserrat-header {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
 }
 
 ul li a {
