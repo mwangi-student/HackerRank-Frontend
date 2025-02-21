@@ -67,7 +67,7 @@ const Login = ({ onClose, onToggle }) => {
         <button
           className={`w-full mt-4 py-3 rounded-lg transition duration-300 ${
             isFormValid
-              ? "bg-green-600 hover:bg-green-700 text-white"
+              ? "bg-[#13457d] hover:bg-[#003066] text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
           disabled={!isFormValid}
