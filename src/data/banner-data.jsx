@@ -3,16 +3,16 @@ export const bannerData = [
   {
     heading: "Stand out from the crowd",
     description:
-      "Get certified in technical skills by taking the HackerRank Certification Test",
+      "Boost your codding skills by taking the HackerRank code challenges."
   },
   {
     heading: "Standardised Assessment",
     description:
-      "Assessments are organised around specific skills and are carefully curated based on years of recruiting data from 2000+ companies",
+      "Assessments are organised around specific skills and are carefully curated based on modules and classroom progress."
   },
   {
-    heading: "Enrich your profile",
+    heading: "Improve your technnical skills",
     description:
-      "Upon successfully clearing an assessment, you can promote yourself using the HackerRank certificate to peers and employers",
-  },
+      "You can improve your technical skills by taking part in codding contest and code challenges."
+  }
 ];
