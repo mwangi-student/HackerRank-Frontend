@@ -1,10 +1,10 @@
-import { Footer, Header, Navbar } from "../components/index";
+import { Challenges, Footer, Header, Navbar } from "../components/index";
 function Compete() {
   return (
     <>
       <Navbar />
       <Header />
-
+      <Challenges />
       <Footer />
     </>
   );

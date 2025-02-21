@@ -6,13 +6,12 @@ const Header = () => {
     <div className="header-container">
       <div className="header-breadcrumbs">
         <ul className="breadcrumbs">
-          <li className="breadcrumb-item">Dashboard</li>
-          <li className="breadcrumb-item">
-            <img src="/Item-arrow-right.svg" alt="arrow-right" />
+          <li className="breadcrumb-item font-bold text-gray-500 font-sans">
+            All Contests
           </li>
-          <li className="breadcrumb-item">Certification Tests</li>
         </ul>
-        <h2>Get Certified</h2>
+        <h2 className="text-3xl text-bold ">Contests</h2>
+        <hr className="w-32 border-gray-400 border-2 my-2" />
       </div>
       <Banner />
     </div>
