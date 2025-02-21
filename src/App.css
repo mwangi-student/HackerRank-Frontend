@@ -8,20 +8,6 @@
   box-sizing: border-box;
 }
 
-/* .montserrat-body {
-  font-family: "Montserrat", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-} */
-
-.montserrat-header {
-  font-family: "Montserrat", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-}
-
 ul li a {
   text-decoration: none;
 }
@@ -249,8 +235,8 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px 20px;
-  margin: 30px 0px 0px 0px;
+  padding: 10px 10px;
+  margin: 5px 0px 0px 0px;
 }
 
 .footer-items a {
