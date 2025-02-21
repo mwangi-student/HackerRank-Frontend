@@ -10,7 +10,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const user = "Antony";
+  const user = "";
 
   useEffect(() => {
     setActiveLink(location.pathname);
