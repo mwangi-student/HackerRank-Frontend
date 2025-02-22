@@ -95,7 +95,7 @@ const Register = ({ onClose, onToggle }) => {
           disabled={!isFormValid}
           className={`w-full mt-4 py-3 rounded-md transition duration-300 ${
             isFormValid
-              ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
+              ? "bg-[#13457d] hover:bg-[#003066] text-white cursor-pointer"
               : "bg-gray-400 text-white cursor-not-allowed"
           }`}
         >
