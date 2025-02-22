@@ -1,7 +1,7 @@
 import { RolesData } from "../data/roles-data";
 import { CodingContests } from "../data/contest-data";
 
-const Challenges = () => {
+const Contests = () => {
   return (
     <div>
       <div>
@@ -68,4 +68,4 @@ const Challenges = () => {
   );
 };
 
-export default Challenges;
+export default Contests;

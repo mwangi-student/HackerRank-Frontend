@@ -1,4 +1,4 @@
-import { Certifications, Footer, Header, Navbar } from "../components/index";
+import { Footer, Navbar } from "../components/index";
 import { Link } from "react-router-dom";
 
 function Home() {
