@@ -128,7 +128,7 @@ export const TestLanguages = [
         />
       </svg>
     ),
-    language: "php",
+    language: "Php",
   },
   {
     icon: (
