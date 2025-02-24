@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import UserContext from "../Contexts/UserContext";
 import Login from "./Login";
 import Register from "./Register";
 import "../App.css";
 
 const Navbar = () => {
+  const { currentUser, logout } = useContext(UserContext); // Get user from context
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const user = "a";
 
   useEffect(() => {
     setActiveLink(location.pathname);
@@ -28,20 +29,21 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <a className="flex items-center space-x-2 mr-6">
               <img
-                src="/hackerrank-logo.svg"
+                src="/hackerrank_logo.svg fill.svg"
                 alt="hackerrank-logo"
                 className="h-8"
               />
               <h4 className="text-white font-semibold text-lg">HackerRank</h4>
               <div className="text-gray-400">|</div>
             </a>
-            {user ? (
+
+            {currentUser ? ( // Show different navigation if logged in
               <ul className="flex items-center space-x-2">
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-bold ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/prepare"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7] text-sm font-bold"
+                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/prepare")}
@@ -51,9 +53,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-lg ml-6 text-sm font-bold ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/compete"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7] text-sm font-bold"
+                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/compete")}
@@ -63,9 +65,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-lg ml-6 text-sm font-bold ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/leaderboard"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7] text-sm font-bold"
+                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/leaderboard")}
@@ -78,9 +80,9 @@ const Navbar = () => {
               <ul className="flex items-center space-x-2">
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-bold ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7] text-sm font-bold"
+                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/")}
@@ -90,9 +92,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-lg ml-6 mr-10 text-sm font-bold ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/discover"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7] text-sm font-bold"
+                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/discover")}
@@ -103,43 +105,36 @@ const Navbar = () => {
               </ul>
             )}
           </div>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  className="size-7"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div className="text-gray-400">|</div>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="size-9">
-                  <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clipRule="evenodd" />
-                </svg>
 
+          <div className="flex items-center space-x-4">
+            {currentUser ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-white font-semibold">
+                  {currentUser.username}
+                </span>
+                <button
+                  onClick={logout}
+                  className="px-3 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition duration-175"
+                >
+                  Logout
+                </button>
               </div>
             ) : (
               <ul className="flex items-center space-x-2">
                 <li>
                   <button
-                    onClick={() => setShowRegister(true)}
-                    className="block px-3 py-2 rounded-lg text-base font-medium text-white bg-blue-500 hover:bg-[#18C8E7] transition duration-175 ease-in-out"
+                    onClick={() => setShowLogin(true)}
+                    className="block px-3 py-2 rounded-lg text-white bg-blue-500 hover:bg-[#18C8E7] transition duration-175"
                   >
-                    Sign Up
+                    Sign In
                   </button>
                 </li>
                 <li>
                   <button
-                    onClick={() => setShowLogin(true)}
-                    className="w-20 h-8 text-white font-semibold text-base"
+                    onClick={() => setShowRegister(true)}
+                    className="w-20 h-8 text-white font-semibold"
                   >
-                    Sign In
+                    Sign Up
                   </button>
                 </li>
               </ul>
@@ -147,6 +142,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+
       {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
