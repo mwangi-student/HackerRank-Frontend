@@ -29,7 +29,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <a className="flex items-center space-x-2 mr-6">
               <img
-                src="/hackerrank_logo.svg fill.svg"
+                src="/hackerrank-logo.svg"
                 alt="hackerrank-logo"
                 className="h-8"
               />
@@ -41,9 +41,9 @@ const Navbar = () => {
               <ul className="flex items-center space-x-2">
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-base font-medium ${
                       activeLink === "/prepare"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
+                        ? "border-b-2 border-[#18C8E7] text-base text-blue-300"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/prepare")}
@@ -53,9 +53,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ml-6${
                       activeLink === "/compete"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
+                        ? "border-b-2 border-[#18C8E7] text-sm ml-6 text-blue-300"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/compete")}
@@ -65,9 +65,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ml-6${
                       activeLink === "/leaderboard"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
+                        ? "border-b-2 border-[#18C8E7] text-sm ml-6 text-blue-300"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/leaderboard")}
@@ -82,7 +82,7 @@ const Navbar = () => {
                   <button
                     className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                       activeLink === "/"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
+                        ? "border-b-2 border-[#18C8E7] text-sm text-blue-300"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/")}
@@ -92,9 +92,9 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
+                    className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
                       activeLink === "/discover"
-                        ? "border-b-2 border-[#18C8E7] text-[#18C8E7]"
+                        ? "border-b-2 border-[#18C8E7] text-sm ml-6 text-blue-300"
                         : ""
                     }`}
                     onClick={() => handleNavClick("/discover")}
