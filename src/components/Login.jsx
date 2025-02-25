@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import UserContext from "../Contexts/UserContext";
 
 const Login = ({ onClose, onToggle }) => {
-  const { login } = useContext(UserContext);
+  const { login, googleSignIn } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -50,6 +50,14 @@ const Login = ({ onClose, onToggle }) => {
       onClose(); // Close modal on success
     } else {
       setError(response.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -144,7 +152,7 @@ const Login = ({ onClose, onToggle }) => {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300">
+        <button onClick={handleGoogleSignIn} className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300">
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             alt="Google"
