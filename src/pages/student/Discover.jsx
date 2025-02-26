@@ -1,4 +1,4 @@
-import { Footer, Header, Navbar } from "../components/index";
+import { Footer, Header, Navbar } from "../../components/index";
 function Discover() {
   return (
     <>
