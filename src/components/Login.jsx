@@ -43,7 +43,7 @@ const Login = ({ onClose, onToggle }) => {
     if (response.success) {
       // Use role to determine where to navigate (not sent to backend)
       if (role === "tm") {
-        navigate("/prepare"); // Change path if needed
+        navigate("/tm/assessments"); // Change path if needed
       } else {
         navigate("/prepare"); // Change path if needed
       }
