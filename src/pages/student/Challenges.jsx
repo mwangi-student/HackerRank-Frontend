@@ -4,7 +4,7 @@ import {
   ChallengesList,
   SortChallenge,
   Footer,
-} from "../components/index";
+} from "../../components/index";
 import { useParams } from "react-router-dom";
 
 export default function Challenges() {
@@ -16,11 +16,13 @@ export default function Challenges() {
         <Navbar />
       </div>
       <main className="flex-grow">
-        <div className="py-[3%] pl-[10%] pr-[10%]">
-          <ChallengesList language={language} />
-        </div>
-        <div>
-          <SortChallenge />
+        <div className="flex-row">
+          <div className="py-[3%] pl-[10%] pr-[10%]">
+            <ChallengesList language={language} />
+          </div>
+          <div>
+            <SortChallenge />
+          </div>
         </div>
       </main>
       <Footer />

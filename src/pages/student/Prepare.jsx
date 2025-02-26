@@ -1,4 +1,4 @@
-import { Footer, AssessmentList, Navbar, Tests } from "../components/index";
+import { Footer, AssessmentList, Navbar, Tests } from "../../components/index";
 
 function Prepare() {
   return (

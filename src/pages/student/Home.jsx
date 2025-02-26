@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Footer, Navbar } from "../components/index";
+import { Footer, Navbar } from "../../components/index";
 import { Link } from "react-router-dom";
-import Register from "../components/Register";
-import Login from "../components/Login"; // Assuming you have a Login component
+import Register from "../../components/Register";
+import Login from "../../components/Login"; // Assuming you have a Login component
 
 function Home() {
   const [showRegister, setShowRegister] = useState(false);

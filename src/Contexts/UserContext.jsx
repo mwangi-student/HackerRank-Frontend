@@ -1,4 +1,7 @@
 import { createContext, useState, useEffect } from "react";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from '../firebase';
+
 import axios from "axios";
 
 const UserContext = createContext();
@@ -11,6 +14,25 @@ export const UserProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
   const [tms, setTms] = useState([]);
 
+  const googleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  }
+
+  const logOutGoogleUser = () => {
+    return signOut(auth);
+  }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setCurrentUser(currentUser);
+      console.log("User", currentUser);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   //====================================== Fetch the currently authenticated user
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -19,9 +41,12 @@ export const UserProvider = ({ children }) => {
         return;
       }
       try {
-        const response = await axios.get("http://127.0.0.1:5000/current_user", {
-          headers: { Authorization: `Bearer ${authToken}` }
-        });
+        const response = await axios.get(
+          "http://127.0.0.1:5000/current_user",
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }
+        );
         setCurrentUser(response.data);
       } catch (error) {
         console.error(
@@ -38,7 +63,7 @@ export const UserProvider = ({ children }) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", {
         email,
-        password
+        password,
       });
       const token = response.data.access_token;
 
@@ -50,7 +75,7 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.error || "Invalid credentials"
+        message: error.response?.data?.error || "Invalid credentials",
       };
     }
   };
@@ -67,7 +92,7 @@ export const UserProvider = ({ children }) => {
         "http://127.0.0.1:5000/logout",
         {},
         {
-          headers: { Authorization: `Bearer ${authToken}` }
+          headers: { Authorization: `Bearer ${authToken}` },
         }
       );
 
@@ -85,7 +110,7 @@ export const UserProvider = ({ children }) => {
   const getAuthHeaders = () => {
     return {
       Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     };
   };
 
@@ -98,13 +123,16 @@ export const UserProvider = ({ children }) => {
         {
           headers: {
             ...getAuthHeaders(),
-            "Access-Control-Allow-Origin": "*"
-          }
+            "Access-Control-Allow-Origin": "*",
+          },
         }
       );
 
       if (response.status === 201) {
-        setStudents((prevStudents) => [...prevStudents, response.data.student]);
+        setStudents((prevStudents) => [
+          ...prevStudents,
+          response.data.student,
+        ]);
         return { success: true, message: "Student registered successfully" };
       }
     } catch (error) {
@@ -125,7 +153,7 @@ export const UserProvider = ({ children }) => {
   const addTM = async (tmData) => {
     try {
       const response = await axios.post("/tm", tmData, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       if (response.status === 201) {
         setTms((prevTms) => [...prevTms, response.data]);
@@ -135,7 +163,7 @@ export const UserProvider = ({ children }) => {
       console.error("TM addition error:", error);
       return {
         success: false,
-        message: error.response?.data?.error || "Failed to add TM"
+        message: error.response?.data?.error || "Failed to add TM",
       };
     }
   };
@@ -144,7 +172,7 @@ export const UserProvider = ({ children }) => {
   const updateStudent = async (id, updatedData) => {
     try {
       const response = await axios.patch(`/students/${id}`, updatedData, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       if (response.status === 200) {
         setStudents((prevStudents) =>
@@ -156,7 +184,7 @@ export const UserProvider = ({ children }) => {
       console.error("Student update error:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Failed to update student"
+        message: error.response?.data?.message || "Failed to update student",
       };
     }
   };
@@ -165,7 +193,7 @@ export const UserProvider = ({ children }) => {
   const updateTM = async (id, updatedData) => {
     try {
       const response = await axios.patch(`/tm/${id}`, updatedData, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       if (response.status === 200) {
         setTms((prevTms) =>
@@ -177,7 +205,7 @@ export const UserProvider = ({ children }) => {
       console.error("TM update error:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Failed to update TM"
+        message: error.response?.data?.message || "Failed to update TM",
       };
     }
   };
@@ -192,7 +220,7 @@ export const UserProvider = ({ children }) => {
       console.error("TM deletion error:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Failed to delete TM"
+        message: error.response?.data?.message || "Failed to delete TM",
       };
     }
   };
@@ -209,12 +237,15 @@ export const UserProvider = ({ children }) => {
         addTM,
         updateStudent,
         updateTM,
-        deleteTM
+        deleteTM,
+        googleSignIn,
+        logOutGoogleUser,
       }}
     >
       {children}
     </UserContext.Provider>
   );
 };
+
 
 export default UserContext;

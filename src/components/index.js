@@ -7,5 +7,8 @@ import AssessmentList from "./AssessmentList";
 import Tests from "./Tests";
 import ChallengesList from "./ChallengesList";
 import SortChallenge from "./SortChallenge";
+import TmNavbar from "./TmNavbar"
+import PublishedAssessments from "./PublishedAssessments.";
+import UnpublishedAssessments from "./UnpublishedAssessment";
 
-export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge };
+export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments };
