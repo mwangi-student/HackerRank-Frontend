@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import UserContext from "../Contexts/UserContext";
 
 const Register = ({ onClose, onToggle }) => {
-  const { registerStudent } = useContext(UserContext);
+  const { registerStudent, googleSignIn } = useContext(UserContext);
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -52,9 +52,12 @@ const Register = ({ onClose, onToggle }) => {
     }
   };
 
-  // Handle Google authentication
-  const handleGoogleAuth = () => {
-    window.open("http://127.0.0.1:5000/auth/google", "_self");
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -148,10 +151,10 @@ const Register = ({ onClose, onToggle }) => {
 
         <div className="mt-4">
           <button
-            onClick={handleGoogleAuth}
+            onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-300"
           >
-            <img src="/google-icon.svg" alt="Google" className="h-5 w-5 mr-2" />
+            <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="h-5 w-5 mr-2" />
             Sign up with Google
           </button>
         </div>
