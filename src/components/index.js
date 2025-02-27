@@ -10,5 +10,6 @@ import SortChallenge from "./SortChallenge";
 import TmNavbar from "./TmNavbar"
 import PublishedAssessments from "./PublishedAssessments.";
 import UnpublishedAssessments from "./UnpublishedAssessment";
+import StudentList from "./StudentList";
 
-export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments };
+export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList };

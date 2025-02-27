@@ -3,7 +3,7 @@ import {
   TmNavbar,
   PublishedAssessments,
   UnpublishedAssessments,
-} from "../components";
+} from "../../components";
 
 export default function AdminAssessment() {
   return (
