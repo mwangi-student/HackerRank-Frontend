@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useNavigate } from "react";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -33,6 +33,7 @@ export const UserProvider = ({ children }) => {
   const logOutGoogleUser = async () => {
     try {
       await signOut(auth);
+      window.location.href = "/";
     } catch (error) {
       toast.error("Logout failed: " + error.message);
     }
@@ -48,14 +49,13 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       if (!authToken) return;
-       console.log("Sending Token:", authToken);
       try {
         const response = await axios.get("http://127.0.0.1:5000/current_user", {
           headers: { Authorization: `Bearer ${authToken}` }
         });
         setCurrentUser(response.data);
       } catch (error) {
-        toast.error("Failed to fetch authenticated user");
+        // toast.error("Failed to fetch authenticated user");
       }
     };
     fetchCurrentUser();
@@ -97,6 +97,7 @@ export const UserProvider = ({ children }) => {
       setStudents([]);
       setTms([]);
       toast.success("Logged out successfully");
+      window.location.href = "/";
     } catch (error) {
       toast.error("Logout failed");
     }
@@ -134,37 +135,6 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // =========================== Password Reset Email ===========================
-  const requestPasswordReset = async (email) => {
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/request-password-reset",
-        { email }
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to send password reset email"
-      );
-    }
-  };
-
-  // =========================== Reset Password function===========================
-  const resetPassword = async (token, newPassword) => {
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/reset-password",
-        {
-          token,
-          new_password: newPassword
-        }
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to reset password");
-    }
-  };
-
   return (
     <UserContext.Provider
       value={{
@@ -176,9 +146,7 @@ export const UserProvider = ({ children }) => {
         registerStudent,
         addTM,
         googleSignIn,
-        logOutGoogleUser,
-        requestPasswordReset, // ✅ Added function
-        resetPassword // ✅ Added function
+        logOutGoogleUser
       }}
     >
       {children}
