@@ -8,9 +8,15 @@ import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
+
 import AdminAssessment from "./pages/AdminAssessment";
 import PasswordReset from "./pages/PasswordReset";
 import PasswordResetForm from "./pages/PassworResetForm";
+
+import AdminAssessment from "./pages/tm/AdminAssessment";
+import Students from "./pages/tm/Students"
+import Statistics from "./pages/tm/Statistics"
+
 
 function App() {
   return (
@@ -30,6 +36,8 @@ function App() {
             element={<PasswordResetForm />}
           />
           <Route path="/tm/assessments" element={<AdminAssessment />} />
+          <Route path="/tm/students" element={<Students />} />
+          <Route path="/tm/stats" element={<Statistics />} />
         </Routes>
       </Router>
     </UserProvider>
