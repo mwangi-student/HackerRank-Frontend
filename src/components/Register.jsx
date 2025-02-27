@@ -55,6 +55,7 @@ const Register = ({ onClose, onToggle }) => {
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
+      navigate("/prepare");
     } catch (error) {
       console.log(error);
     }
@@ -154,7 +155,11 @@ const Register = ({ onClose, onToggle }) => {
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-300"
           >
-            <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+            <img
+              src="https://www.svgrepo.com/show/355037/google.svg"
+              alt="Google"
+              className="h-5 w-5 mr-2"
+            />
             Sign up with Google
           </button>
         </div>

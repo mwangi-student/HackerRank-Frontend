@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import UserContext from "../Contexts/UserContext";
 
-const ProfileDropdown = ({ logout }) => {
+const ProfileDropdown = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+
+  const { logout, logOutGoogleUser } = useContext(UserContext);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -60,7 +63,10 @@ const ProfileDropdown = ({ logout }) => {
             Your Profile
           </a>
           <button
-            onClick={logout}
+            onClick={() => {
+              logout(), logOutGoogleUser();
+              setShowDropdown(false);
+            }}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
             tabIndex={-1}

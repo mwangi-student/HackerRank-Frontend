@@ -1,6 +1,11 @@
 import { createContext, useState, useEffect } from "react";
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from '../firebase';
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "firebase/auth";
+import { auth } from "../firebase";
 
 import axios from "axios";
 
@@ -9,7 +14,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [authToken, setAuthToken] = useState(() =>
-    sessionStorage.getItem("token")
+    localStorage.getItem("token")
   );
   const [students, setStudents] = useState([]);
   const [tms, setTms] = useState([]);
@@ -17,11 +22,11 @@ export const UserProvider = ({ children }) => {
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
-  }
+  };
 
   const logOutGoogleUser = () => {
     return signOut(auth);
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -41,12 +46,9 @@ export const UserProvider = ({ children }) => {
         return;
       }
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:5000/current_user",
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }
-        );
+        const response = await axios.get("http://127.0.0.1:5000/current_user", {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
         setCurrentUser(response.data);
       } catch (error) {
         console.error(
@@ -63,11 +65,11 @@ export const UserProvider = ({ children }) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", {
         email,
-        password,
+        password
       });
       const token = response.data.access_token;
 
-      sessionStorage.setItem("token", token);
+      localStorage.setItem("token", token);
       setAuthToken(token); // Ensure state updates
       setCurrentUser(response.data.user);
 
@@ -75,7 +77,7 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.error || "Invalid credentials",
+        message: error.response?.data?.error || "Invalid credentials"
       };
     }
   };
@@ -88,15 +90,18 @@ export const UserProvider = ({ children }) => {
         return;
       }
 
+      // Logout from backend
       await axios.post(
         "http://127.0.0.1:5000/logout",
         {},
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
+        { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
-      sessionStorage.removeItem("token");
+      // Logout from Firebase (Google Auth)
+      await signOut(auth);
+
+      // Clear session and state
+      localStorage.removeItem("token");
       setCurrentUser(null);
       setAuthToken(null);
       setStudents([]);
@@ -105,14 +110,9 @@ export const UserProvider = ({ children }) => {
       console.error("Logout failed", error.response?.data || error.message);
     }
   };
-
-  // General function to get auth headers
-  const getAuthHeaders = () => {
-    return {
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
-    };
-  };
+  console.log("hello");
+  console.log(authToken);
+  console.log(currentUser);
 
   // ===========================registering a student
   const registerStudent = async (studentData) => {
@@ -123,16 +123,13 @@ export const UserProvider = ({ children }) => {
         {
           headers: {
             ...getAuthHeaders(),
-            "Access-Control-Allow-Origin": "*",
-          },
+            "Access-Control-Allow-Origin": "*"
+          }
         }
       );
 
       if (response.status === 201) {
-        setStudents((prevStudents) => [
-          ...prevStudents,
-          response.data.student,
-        ]);
+        setStudents((prevStudents) => [...prevStudents, response.data.student]);
         return { success: true, message: "Student registered successfully" };
       }
     } catch (error) {
@@ -153,7 +150,7 @@ export const UserProvider = ({ children }) => {
   const addTM = async (tmData) => {
     try {
       const response = await axios.post("/tm", tmData, {
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders()
       });
       if (response.status === 201) {
         setTms((prevTms) => [...prevTms, response.data]);
@@ -163,64 +160,7 @@ export const UserProvider = ({ children }) => {
       console.error("TM addition error:", error);
       return {
         success: false,
-        message: error.response?.data?.error || "Failed to add TM",
-      };
-    }
-  };
-
-  //================================================ Update Student Details
-  const updateStudent = async (id, updatedData) => {
-    try {
-      const response = await axios.patch(`/students/${id}`, updatedData, {
-        headers: getAuthHeaders(),
-      });
-      if (response.status === 200) {
-        setStudents((prevStudents) =>
-          prevStudents.map((s) => (s.id === id ? response.data.student : s))
-        );
-        return { success: true, message: "Student updated successfully" };
-      }
-    } catch (error) {
-      console.error("Student update error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to update student",
-      };
-    }
-  };
-
-  //================================================ Update TM Details
-  const updateTM = async (id, updatedData) => {
-    try {
-      const response = await axios.patch(`/tm/${id}`, updatedData, {
-        headers: getAuthHeaders(),
-      });
-      if (response.status === 200) {
-        setTms((prevTms) =>
-          prevTms.map((tm) => (tm.id === id ? { ...tm, ...updatedData } : tm))
-        );
-        return { success: true, message: "TM updated successfully" };
-      }
-    } catch (error) {
-      console.error("TM update error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to update TM",
-      };
-    }
-  };
-
-  //================================================ Delete a TM
-  const deleteTM = async (id) => {
-    try {
-      await axios.delete(`/tm/${id}`, { headers: getAuthHeaders() });
-      setTms((prevTms) => prevTms.filter((tm) => tm.id !== id));
-      return { success: true, message: "TM deleted successfully" };
-    } catch (error) {
-      console.error("TM deletion error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to delete TM",
+        message: error.response?.data?.error || "Failed to add TM"
       };
     }
   };
@@ -235,17 +175,13 @@ export const UserProvider = ({ children }) => {
         logout,
         registerStudent,
         addTM,
-        updateStudent,
-        updateTM,
-        deleteTM,
         googleSignIn,
-        logOutGoogleUser,
+        logOutGoogleUser
       }}
     >
       {children}
     </UserContext.Provider>
   );
 };
-
 
 export default UserContext;

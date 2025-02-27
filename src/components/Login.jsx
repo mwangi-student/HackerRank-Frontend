@@ -56,6 +56,7 @@ const Login = ({ onClose, onToggle }) => {
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
+      navigate("/prepare");
     } catch (error) {
       console.log(error);
     }
@@ -152,7 +153,10 @@ const Login = ({ onClose, onToggle }) => {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <button onClick={handleGoogleSignIn} className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300"
+        >
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             alt="Google"

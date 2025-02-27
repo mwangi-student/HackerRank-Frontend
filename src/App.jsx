@@ -1,12 +1,12 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserProvider } from "./Contexts/UserContext";
-import Discover from "./pages/Discover";
-import Home from "./pages/Home";
-import Compete from "./pages/Compete";
-import Prepare from "./pages/Prepare";
-import Leaderboard from "./pages/Leaderboard";
-import Challenges from "./pages/Challenges";
+import Discover from "./pages/student/Discover";
+import Home from "./pages/student/Home";
+import Compete from "./pages/student/Compete";
+import Prepare from "./pages/student/Prepare";
+import Leaderboard from "./pages/student/Leaderboard";
+import Challenges from "./pages/student/Challenges";
 
 function App() {
   return (
