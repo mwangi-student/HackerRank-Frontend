@@ -7,7 +7,9 @@ import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
-import AdminAssessment from "./pages/AdminAssessment";
+import AdminAssessment from "./pages/tm/AdminAssessment";
+import Students from "./pages/tm/Students"
+import Statistics from "./pages/tm/Statistics"
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/practice/:language" element={<Challenges />} />
           <Route path="/tm/assessments" element={<AdminAssessment />} />
+          <Route path="/tm/students" element={<Students />} />
+          <Route path="/tm/stats" element={<Statistics />} />
         </Routes>
       </Router>
     </UserProvider>

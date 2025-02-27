@@ -36,11 +36,11 @@ const Navbar = () => {
               <li>
                 <button
                   className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
-                    activeLink === "/tm/assessment"
+                    activeLink === "/tm/assessments"
                       ? "border-b-2 border-green-500 text-sm text-green-500"
                       : ""
                   }`}
-                  onClick={() => handleNavClick("/")}
+                  onClick={() => handleNavClick("/tm/assessments")}
                 >
                   Assessments
                 </button>
@@ -48,11 +48,11 @@ const Navbar = () => {
               <li>
                 <button
                   className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
-                    activeLink === "/discover"
+                    activeLink === "/tm/students"
                       ? "border-b-2 border-green-500 text-sm ml-6 text-green-500"
                       : ""
                   }`}
-                  onClick={() => handleNavClick("/discover")}
+                  onClick={() => handleNavClick("/tm/students")}
                 >
                   Students
                 </button>
