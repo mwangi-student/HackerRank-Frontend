@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { UserProvider } from "./Contexts/UserContext";
 import Discover from "./pages/student/Discover";
 import Home from "./pages/student/Home";
@@ -7,14 +8,14 @@ import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
-<<<<<<< HEAD
-=======
 import AdminAssessment from "./pages/AdminAssessment";
->>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
+import PasswordReset from "./pages/PasswordReset";
+import PasswordResetForm from "./pages/PassworResetForm";
 
 function App() {
   return (
     <UserProvider>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -23,6 +24,11 @@ function App() {
           <Route path="/prepare" element={<Prepare />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/practice/:language" element={<Challenges />} />
+          <Route path="/password-reset" element={<PasswordReset />} />
+          <Route
+            path="/reset-password/:token"
+            element={<PasswordResetForm />}
+          />
           <Route path="/tm/assessments" element={<AdminAssessment />} />
         </Routes>
       </Router>

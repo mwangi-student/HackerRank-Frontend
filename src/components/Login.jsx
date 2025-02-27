@@ -56,7 +56,10 @@ const Login = ({ onClose, onToggle }) => {
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
-      navigate("/prepare");
+      setTimeout(() => {
+        onClose();
+        navigate("/prepare");
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -142,7 +145,7 @@ const Login = ({ onClose, onToggle }) => {
             <input type="checkbox" className="h-4 w-4" />
             <span>Remember me</span>
           </label>
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="/password-reset" className="text-blue-600 hover:underline">
             Forgot password?
           </a>
         </div>

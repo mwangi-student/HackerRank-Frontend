@@ -1,19 +1,12 @@
-<<<<<<< HEAD
 import { useState, useEffect, useRef, useContext } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../Contexts/UserContext";
 
 const ProfileDropdown = () => {
-=======
-import { useContext, useState, useEffect, useRef } from "react";
-import UserContext from "../Contexts/UserContext";
-
-const ProfileDropdown = () => {
-  const { logOutGoogleUser, logout } = useContext(UserContext); // Get user from context
->>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
+  const { logOutGoogleUser, logout } = useContext(UserContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
-  const { logout, logOutGoogleUser } = useContext(UserContext);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -27,10 +20,16 @@ const ProfileDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle Logout with Toast Notifications
   const handleLogOut = () => {
-    logOutGoogleUser();
-    logout();
-  }
+    try {
+      logOutGoogleUser();
+      logout();
+      setShowDropdown(false);
+    } catch (error) {
+      toast.error("Error logging out. Please try again.");
+    }
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -71,22 +70,13 @@ const ProfileDropdown = () => {
             href="#"
             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
-            tabIndex={-1}
           >
             Your Profile
           </a>
           <button
-<<<<<<< HEAD
-            onClick={() => {
-              logout(), logOutGoogleUser();
-              setShowDropdown(false);
-            }}
-=======
             onClick={handleLogOut}
->>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
-            tabIndex={-1}
           >
             Sign out
           </button>
