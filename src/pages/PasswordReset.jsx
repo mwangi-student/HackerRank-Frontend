@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -18,7 +18,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md">
         <h2 className="text-2xl font-semibold text-center text-gray-700">
           Forgot Password

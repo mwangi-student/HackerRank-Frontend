@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useNavigate } from "react";
+import { createContext, useState, useEffect } from "react";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -10,6 +10,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// Create User Context
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -20,6 +21,7 @@ export const UserProvider = ({ children }) => {
   const [students, setStudents] = useState([]);
   const [tms, setTms] = useState([]);
 
+  // 🔹 Google Sign-In Function
   const googleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -30,6 +32,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Logout Google User
   const logOutGoogleUser = async () => {
     try {
       await signOut(auth);
@@ -39,6 +42,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Monitor Auth State (Checks if User is Logged In)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -46,6 +50,7 @@ export const UserProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
+  // 🔹 Fetch Current Authenticated User from Backend
   useEffect(() => {
     const fetchCurrentUser = async () => {
       if (!authToken) return;
@@ -61,6 +66,7 @@ export const UserProvider = ({ children }) => {
     fetchCurrentUser();
   }, [authToken]);
 
+  // 🔹 Login Function
   const login = async (email, password) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", {
@@ -79,6 +85,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Logout Function
   const logout = async () => {
     console.log("Logout function triggered");
     try {
@@ -103,6 +110,30 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Reset Password Function
+  const resetPassword = async (token, newPassword) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token, new_password: newPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to reset password");
+      }
+
+      return data; // Successful password reset response
+    } catch (error) {
+      throw new Error(error.message || "Something went wrong");
+    }
+  };
+
+  // 🔹 Register a New Student
   const registerStudent = async (studentData) => {
     try {
       const response = await axios.post(
@@ -121,6 +152,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Add a TM (Teacher Mentor)
   const addTM = async (tmData) => {
     try {
       const response = await axios.post("/tm", tmData, {
@@ -135,6 +167,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 🔹 Providing Context Values
   return (
     <UserContext.Provider
       value={{
@@ -143,6 +176,7 @@ export const UserProvider = ({ children }) => {
         tms,
         login,
         logout,
+        resetPassword, // Added resetPassword to the context
         registerStudent,
         addTM,
         googleSignIn,
