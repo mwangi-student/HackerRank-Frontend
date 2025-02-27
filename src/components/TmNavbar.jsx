@@ -1,15 +1,17 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "../Contexts/UserContext";
+import ProfileModal from "./TmProfile"; // Import the ProfileModal component
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../App.css";
 
 const Navbar = () => {
-  const { logout } = useContext(UserContext); // Get user from context
+  const { logout, user } = useContext(UserContext); // Get user from context
   const navigate = useNavigate();
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
     setActiveLink(location.pathname);
@@ -19,6 +21,7 @@ const Navbar = () => {
     setActiveLink(path);
     navigate(path);
   };
+
   const handleLogOut = () => {
     try {
       console.log("Logging out...");
@@ -50,7 +53,7 @@ const Navbar = () => {
                 <button
                   className={`text-white hover:text-[#79CCFF] py-4 text-sm font-medium ${
                     activeLink === "/tm/assessments"
-                      ? "border-b-2 border-green-500 text-sm text-green-500"
+                      ? "border-b-2 border-green-500 text-green-500"
                       : ""
                   }`}
                   onClick={() => handleNavClick("/tm/assessments")}
@@ -62,7 +65,7 @@ const Navbar = () => {
                 <button
                   className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
                     activeLink === "/tm/students"
-                      ? "border-b-2 border-green-500 text-sm ml-6 text-green-500"
+                      ? "border-b-2 border-green-500 text-green-500"
                       : ""
                   }`}
                   onClick={() => handleNavClick("/tm/students")}
@@ -74,7 +77,7 @@ const Navbar = () => {
                 <button
                   className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
                     activeLink === "/tm/stats"
-                      ? "border-b-2 border-green-500 text-sm ml-6 text-green-500"
+                      ? "border-b-2 border-green-500 text-green-500"
                       : ""
                   }`}
                   onClick={() => handleNavClick("/tm/stats")}
@@ -86,21 +89,33 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-4">
-              <p className="text-white">Hello TM</p>
-              <div className="text-gray-400">|</div>
-              <div className="relative ml-3">
-                <button
-                  onClick={handleLogOut}
-                  className="px-3 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition duration-175"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
+            <button
+              className="text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium"
+              onClick={() => setIsProfileOpen(true)} // Open modal on click
+            >
+              Profile
+            </button>
+            <div className="text-gray-400">|</div>
+            <button
+              onClick={handleLogOut}
+              className="px-3 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition duration-175"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        userData={user} // Pass user data from context
+        onSave={(updatedUser) => {
+          console.log("Updated Profile:", updatedUser);
+          setIsProfileOpen(false);
+        }}
+      />
     </div>
   );
 };

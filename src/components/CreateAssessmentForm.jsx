@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function CreateAssessmentForm({ isOpen, onClose, onSubmit }) {
+export default function CreateAssessmentForm({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  isUpdateMode
+}) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     difficulty: "",
     category: "",
-    constraints: ""
+    constraints: "",
+    publish: false,
+    inviteStudents: false
   });
 
+  // Populate form when in update mode
+  useEffect(() => {
+    if (isUpdateMode && initialData) {
+      setFormData(initialData);
+    }
+  }, [isUpdateMode, initialData]);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, type, checked, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value
+    });
   };
 
   const handleSubmit = (e) => {
@@ -25,7 +44,7 @@ export default function CreateAssessmentForm({ isOpen, onClose, onSubmit }) {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-lg">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Create Assessment
+          {isUpdateMode ? "Update Assessment" : "Create Assessment"}
         </h2>
 
         {/* Form */}
@@ -78,7 +97,7 @@ export default function CreateAssessmentForm({ isOpen, onClose, onSubmit }) {
           ></textarea>
 
           {/* Buttons */}
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 mt-4">
             <button
               type="button"
               onClick={onClose}
@@ -90,7 +109,7 @@ export default function CreateAssessmentForm({ isOpen, onClose, onSubmit }) {
               type="submit"
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
-              Submit
+              {isUpdateMode ? "Update" : "Submit"}
             </button>
           </div>
         </form>
