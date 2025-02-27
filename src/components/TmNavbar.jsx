@@ -1,6 +1,8 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import UserContext from "../Contexts/UserContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../App.css";
 
 const Navbar = () => {
@@ -16,6 +18,17 @@ const Navbar = () => {
   const handleNavClick = (path) => {
     setActiveLink(path);
     navigate(path);
+  };
+  const handleLogOut = () => {
+    try {
+      console.log("Logging out...");
+      logout(); // Ensure this function is valid
+      console.log("Logout successful!");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Error logging out. Please try again.");
+    }
   };
 
   return (
@@ -74,11 +87,11 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-4">
-              <p className="text-white">Hello user</p>
+              <p className="text-white">Hello TM</p>
               <div className="text-gray-400">|</div>
               <div className="relative ml-3">
                 <button
-                  onClick={logout}
+                  onClick={handleLogOut}
                   className="px-3 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600 transition duration-175"
                 >
                   Logout

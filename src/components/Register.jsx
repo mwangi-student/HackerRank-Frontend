@@ -1,10 +1,14 @@
 import { useState, useContext } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import PropTypes from "prop-types";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import UserContext from "../Contexts/UserContext";
 
 const Register = ({ onClose, onToggle }) => {
   const { registerStudent, googleSignIn } = useContext(UserContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -16,28 +20,22 @@ const Register = ({ onClose, onToggle }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error on input change
   };
 
   // Check if form is valid
-  const isFormValid =
-    formData.fullName.trim() !== "" &&
-    formData.username.trim() !== "" &&
-    formData.cohort.trim() !== "" &&
-    formData.tm_id.trim().length > 0 &&
-    formData.email.trim() !== "" &&
-    formData.password.trim() !== "";
+  const isFormValid = Object.values(formData).every(
+    (value) => value.trim() !== ""
+  );
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) {
-      setError("Please fill out all fields before submitting.");
+      toast.error("Please fill out all fields before submitting.");
       return;
     }
     setLoading(true);
@@ -45,18 +43,28 @@ const Register = ({ onClose, onToggle }) => {
     setLoading(false);
 
     if (response.success) {
-      onClose(); // Close the registration modal
-      onToggle(); // Open the login modal
+      toast.success("Registration successful! Redirecting...");
+      setTimeout(() => {
+        onClose();
+        onToggle();
+      }, 1000);
     } else {
-      setError(response.message);
+      toast.error(response.message || "Registration failed. Please try again.");
     }
   };
 
+  // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
+      // toast.success("Google sign-in successful!");
+      setTimeout(() => {
+        onClose();
+        navigate("/prepare");
+      }, 1000);
     } catch (error) {
-      console.log(error);
+      toast.error("Google sign-in failed. Please try again.");
+      console.error(error);
     }
   };
 
@@ -75,49 +83,21 @@ const Register = ({ onClose, onToggle }) => {
         </div>
 
         <p className="text-gray-600 mt-1">Create an account to get started.</p>
-        {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
 
         <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            value={formData.fullName}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            name="username"
-            placeholder="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            name="cohort"
-            placeholder="cohort"
-            value={formData.cohort}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            name="tm_id"
-            placeholder="tm Id"
-            value={formData.tm_id}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          {["fullName", "username", "cohort", "tm_id", "email"].map((field) => (
+            <input
+              key={field}
+              type={field === "email" ? "email" : "text"}
+              name={field}
+              placeholder={field.replace(/_/g, " ")}
+              value={formData[field]}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          ))}
+
+          {/* Password Input */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -136,6 +116,7 @@ const Register = ({ onClose, onToggle }) => {
             </button>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full mt-4 py-3 rounded-lg transition duration-300 ${
@@ -149,16 +130,22 @@ const Register = ({ onClose, onToggle }) => {
           </button>
         </form>
 
+        {/* Google Sign-In Button */}
         <div className="mt-4">
           <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-300"
           >
-            <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+            <img
+              src="https://www.svgrepo.com/show/355037/google.svg"
+              alt="Google"
+              className="h-5 w-5 mr-2"
+            />
             Sign up with Google
           </button>
         </div>
 
+        {/* Toggle Login */}
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}
           <button onClick={onToggle} className="text-blue-600 hover:underline">

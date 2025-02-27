@@ -56,6 +56,10 @@ const Login = ({ onClose, onToggle }) => {
   const handleGoogleSignIn = async () => {
     try {
       await googleSignIn();
+      setTimeout(() => {
+        onClose();
+        navigate("/prepare");
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
@@ -141,7 +145,7 @@ const Login = ({ onClose, onToggle }) => {
             <input type="checkbox" className="h-4 w-4" />
             <span>Remember me</span>
           </label>
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="/password-reset" className="text-blue-600 hover:underline">
             Forgot password?
           </a>
         </div>
@@ -152,7 +156,10 @@ const Login = ({ onClose, onToggle }) => {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <button onClick={handleGoogleSignIn} className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-2 border py-3 rounded-lg hover:bg-gray-100 transition duration-300"
+        >
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"
             alt="Google"

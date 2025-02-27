@@ -1,227 +1,137 @@
-import { createContext, useState, useEffect } from "react";
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from '../firebase';
-
+import { createContext, useState, useEffect, useNavigate } from "react";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "firebase/auth";
+import { auth } from "../firebase";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [authToken, setAuthToken] = useState(() =>
-    sessionStorage.getItem("token")
+    localStorage.getItem("token")
   );
   const [students, setStudents] = useState([]);
   const [tms, setTms] = useState([]);
 
   const googleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  }
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      toast.success("Google sign-in successful");
+    } catch (error) {
+      toast.error("Google sign-in failed: " + error.message);
+    }
+  };
 
-  const logOutGoogleUser = () => {
-    return signOut(auth);
-  }
+  const logOutGoogleUser = async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "/";
+    } catch (error) {
+      toast.error("Logout failed: " + error.message);
+    }
+  };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setCurrentUser(currentUser);
-      console.log("User", currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
     });
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
-  //====================================== Fetch the currently authenticated user
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      if (!authToken) {
-        console.warn("No token found, user not authenticated.");
-        return;
-      }
+      if (!authToken) return;
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:5000/current_user",
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }
-        );
+        const response = await axios.get("http://127.0.0.1:5000/current_user", {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
         setCurrentUser(response.data);
       } catch (error) {
-        console.error(
-          "No authenticated user found",
-          error.response?.data || error.message
-        );
+        // toast.error("Failed to fetch authenticated user");
       }
     };
     fetchCurrentUser();
-  }, [authToken]); // Re-run when authToken changes
+  }, [authToken]);
 
-  // ==============================================Login Function
   const login = async (email, password) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", {
         email,
-        password,
+        password
       });
       const token = response.data.access_token;
-
-      sessionStorage.setItem("token", token);
-      setAuthToken(token); // Ensure state updates
+      localStorage.setItem("token", token);
+      setAuthToken(token);
       setCurrentUser(response.data.user);
-
-      return { success: true, message: "Login successful" };
+      toast.success("Login successful");
+      return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.error || "Invalid credentials",
-      };
+      toast.error("Invalid credentials");
+      return { success: false };
     }
   };
 
-  //================================================== Logout Function
   const logout = async () => {
+    console.log("Logout function triggered");
     try {
-      if (!authToken) {
-        console.warn("No token found, user may already be logged out.");
-        return;
-      }
-
+      if (!authToken) return;
       await axios.post(
         "http://127.0.0.1:5000/logout",
         {},
         {
-          headers: { Authorization: `Bearer ${authToken}` },
+          headers: { Authorization: `Bearer ${authToken}` }
         }
       );
-
-      sessionStorage.removeItem("token");
+      await signOut(auth);
+      localStorage.removeItem("token");
       setCurrentUser(null);
       setAuthToken(null);
       setStudents([]);
       setTms([]);
+      toast.success("Logged out successfully");
+      window.location.href = "/";
     } catch (error) {
-      console.error("Logout failed", error.response?.data || error.message);
+      toast.error("Logout failed");
     }
   };
 
-  // General function to get auth headers
-  const getAuthHeaders = () => {
-    return {
-      Authorization: `Bearer ${authToken}`,
-      "Content-Type": "application/json",
-    };
-  };
-
-  // ===========================registering a student
   const registerStudent = async (studentData) => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:5000/students",
         studentData,
         {
-          headers: {
-            ...getAuthHeaders(),
-            "Access-Control-Allow-Origin": "*",
-          },
+          headers: { Authorization: `Bearer ${authToken}` }
         }
       );
-
-      if (response.status === 201) {
-        setStudents((prevStudents) => [
-          ...prevStudents,
-          response.data.student,
-        ]);
-        return { success: true, message: "Student registered successfully" };
-      }
+      setStudents((prev) => [...prev, response.data.student]);
+      toast.success("Student registered successfully");
+      return { success: true };
     } catch (error) {
-      console.error("Registration error:", error);
-
-      let errorMessage = "Failed to register student";
-      if (error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-      } else if (error.request) {
-        errorMessage = "Network error. Please check your connection.";
-      }
-
-      return { success: false, message: errorMessage };
+      toast.error("Failed to register student");
+      return { success: false };
     }
   };
 
-  //================================================ Add a TM
   const addTM = async (tmData) => {
     try {
       const response = await axios.post("/tm", tmData, {
-        headers: getAuthHeaders(),
+        headers: { Authorization: `Bearer ${authToken}` }
       });
-      if (response.status === 201) {
-        setTms((prevTms) => [...prevTms, response.data]);
-        return { success: true, message: "TM added successfully" };
-      }
+      setTms((prev) => [...prev, response.data]);
+      toast.success("TM added successfully");
+      return { success: true };
     } catch (error) {
-      console.error("TM addition error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.error || "Failed to add TM",
-      };
-    }
-  };
-
-  //================================================ Update Student Details
-  const updateStudent = async (id, updatedData) => {
-    try {
-      const response = await axios.patch(`/students/${id}`, updatedData, {
-        headers: getAuthHeaders(),
-      });
-      if (response.status === 200) {
-        setStudents((prevStudents) =>
-          prevStudents.map((s) => (s.id === id ? response.data.student : s))
-        );
-        return { success: true, message: "Student updated successfully" };
-      }
-    } catch (error) {
-      console.error("Student update error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to update student",
-      };
-    }
-  };
-
-  //================================================ Update TM Details
-  const updateTM = async (id, updatedData) => {
-    try {
-      const response = await axios.patch(`/tm/${id}`, updatedData, {
-        headers: getAuthHeaders(),
-      });
-      if (response.status === 200) {
-        setTms((prevTms) =>
-          prevTms.map((tm) => (tm.id === id ? { ...tm, ...updatedData } : tm))
-        );
-        return { success: true, message: "TM updated successfully" };
-      }
-    } catch (error) {
-      console.error("TM update error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to update TM",
-      };
-    }
-  };
-
-  //================================================ Delete a TM
-  const deleteTM = async (id) => {
-    try {
-      await axios.delete(`/tm/${id}`, { headers: getAuthHeaders() });
-      setTms((prevTms) => prevTms.filter((tm) => tm.id !== id));
-      return { success: true, message: "TM deleted successfully" };
-    } catch (error) {
-      console.error("TM deletion error:", error);
-      return {
-        success: false,
-        message: error.response?.data?.message || "Failed to delete TM",
-      };
+      toast.error("Failed to add TM");
+      return { success: false };
     }
   };
 
@@ -235,17 +145,13 @@ export const UserProvider = ({ children }) => {
         logout,
         registerStudent,
         addTM,
-        updateStudent,
-        updateTM,
-        deleteTM,
         googleSignIn,
-        logOutGoogleUser,
+        logOutGoogleUser
       }}
     >
       {children}
     </UserContext.Provider>
   );
 };
-
 
 export default UserContext;
