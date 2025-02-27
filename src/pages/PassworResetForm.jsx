@@ -27,7 +27,7 @@ export default function PasswordResetForm() {
     try {
       await resetPassword(token, password);
       toast.success("Password successfully reset!");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       toast.error(error.message || "Failed to reset password");
     }
