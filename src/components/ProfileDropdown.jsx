@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 import { useState, useEffect, useRef, useContext } from "react";
 import UserContext from "../Contexts/UserContext";
 
 const ProfileDropdown = () => {
+=======
+import { useContext, useState, useEffect, useRef } from "react";
+import UserContext from "../Contexts/UserContext";
+
+const ProfileDropdown = () => {
+  const { logOutGoogleUser, logout } = useContext(UserContext); // Get user from context
+>>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -18,6 +26,11 @@ const ProfileDropdown = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleLogOut = () => {
+    logOutGoogleUser();
+    logout();
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -63,10 +76,14 @@ const ProfileDropdown = () => {
             Your Profile
           </a>
           <button
+<<<<<<< HEAD
             onClick={() => {
               logout(), logOutGoogleUser();
               setShowDropdown(false);
             }}
+=======
+            onClick={handleLogOut}
+>>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
             tabIndex={-1}

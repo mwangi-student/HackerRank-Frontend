@@ -7,6 +7,10 @@ import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
+<<<<<<< HEAD
+=======
+import AdminAssessment from "./pages/AdminAssessment";
+>>>>>>> 535d63fcd8dfdba23775b2db98c0ca30a646fef6
 
 function App() {
   return (
@@ -19,6 +23,7 @@ function App() {
           <Route path="/prepare" element={<Prepare />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/practice/:language" element={<Challenges />} />
+          <Route path="/tm/assessments" element={<AdminAssessment />} />
         </Routes>
       </Router>
     </UserProvider>

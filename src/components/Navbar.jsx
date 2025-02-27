@@ -7,7 +7,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import "../App.css";
 
 const Navbar = () => {
-  const { currentUser, logout } = useContext(UserContext); // Get user from context
+  const { currentUser } = useContext(UserContext); // Get user from context
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
@@ -124,7 +124,7 @@ const Navbar = () => {
                 </svg>
                 <div className="text-gray-400">|</div>
                 <div className="relative ml-3">
-                  <ProfileDropdown logout={logout} />
+                  <ProfileDropdown />
                 </div>
               </div>
             ) : (
