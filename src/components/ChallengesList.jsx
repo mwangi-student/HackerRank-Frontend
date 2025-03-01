@@ -1,7 +1,9 @@
-import React from "react";
+import { React } from "react";
+import { useNavigate } from "react-router-dom";
 import { challenges } from "../data/challenge-questions-data";
 
 export default function ChallengesList({ language }) {
+  const navigate = useNavigate();
   const filteredChallenges = challenges.filter(
     (challenge) => challenge.language === language
   );
@@ -36,7 +38,7 @@ export default function ChallengesList({ language }) {
                 </p>
               </div>
             </div>
-            <button className="border border-gray-400 hover:border-sky-500 px-2 rounded-lg">
+            <button className="border border-gray-400 hover:border-sky-500 px-2 rounded-lg" onClick={() => { navigate("/code") }}>
               Solve Challenge
             </button>
           </div>

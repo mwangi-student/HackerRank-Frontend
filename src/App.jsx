@@ -14,6 +14,7 @@ import PasswordResetForm from "./pages/PassworResetForm";
 import AdminAssessment from "./pages/tm/AdminAssessment";
 import Students from "./pages/tm/Students";
 import Statistics from "./pages/tm/Statistics";
+import TakeChallenge from "./pages/student/TakeChallenge";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/tm/assessments" element={<AdminAssessment />} />
           <Route path="/tm/students" element={<Students />} />
           <Route path="/tm/stats" element={<Statistics />} />
+          <Route path = "/code" element={<TakeChallenge />} />
         </Routes>
       </Router>
     </UserProvider>
