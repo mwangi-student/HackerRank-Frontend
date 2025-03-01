@@ -11,5 +11,8 @@ import TmNavbar from "./TmNavbar"
 import PublishedAssessments from "./PublishedAssessments.";
 import UnpublishedAssessments from "./UnpublishedAssessment";
 import StudentList from "./StudentList";
+import CodeEditor from "./CodeEditor";
+import ChallengeQuestion from "./ChallengeQuestion";
+import ChallengeHeader from "./ChallengeHeader";
 
-export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList };
+export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList, CodeEditor, ChallengeQuestion, ChallengeHeader };
