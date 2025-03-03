@@ -17,6 +17,7 @@ import Statistics from "./pages/tm/Statistics";
 import TakeChallenge from "./pages/student/TakeChallenge";
 import CodeChallenge from "./pages/student/CodeChallenge";
 import MCQQuiz from "./pages/student/McqQuiz";
+import McqResults from "./pages/student/McqResults"
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="/practice/code" element={<TakeChallenge />} />
           <Route path="/assessment/challenge" element={<CodeChallenge />} />
           <Route path="/assessment/mcquestions" element={<MCQQuiz />} />
+          <Route path="/assessment/mcqresults" element={<McqResults />} />
         </Routes>
       </Router>
     </UserProvider>
