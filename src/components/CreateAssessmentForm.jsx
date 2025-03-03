@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import AssessmentContext from "../Contexts/AssessmentContext";
+import QuestionsContext from "../Contexts/QuestionsContext";
+// import { useCodeChallenges } from "../Contexts/CodeChallengeContext";
 
 export default function CreateAssessmentForm({
   isOpen,
   onClose,
-  onSubmit,
-  initialData,
   isUpdateMode,
+  initialData,
 }) {
+  const { addQuestion } = useContext(QuestionsContext);
+  const { createAssessment } = useContext(AssessmentContext);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -16,7 +20,7 @@ export default function CreateAssessmentForm({
     inviteStudents: false,
     assessmentType: "",
     numberOfQuestions: 1,
-    currentQuestionIndex: 0, // Tracks which question is being created
+    currentQuestionIndex: 0,
     questions: [],
     codeChallenge: {
       task: "",
@@ -74,6 +78,11 @@ export default function CreateAssessmentForm({
   };
 
   const handleAddQuestion = () => {
+    if (!currentMCQ.question || !currentMCQ.correctAnswer) {
+      alert("Please fill out the question and select the correct answer.");
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       questions: [...prev.questions, currentMCQ],
@@ -88,15 +97,48 @@ export default function CreateAssessmentForm({
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.assessmentType === "mcq") {
+
+    // Validate required fields
+    if (!formData.title || !formData.description || !formData.difficulty || !formData.category || !formData.assessmentType) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
+    if (formData.assessmentType === "mcq" && formData.questions.length === 0) {
+      alert("Please add at least one question.");
+      return;
+    }
+
+    if (formData.assessmentType === "code" && !formData.codeChallenge.task) {
+      alert("Please fill out the code challenge task.");
+      return;
+    }
+
+    // Add the last question if it's not added yet
+    if (formData.assessmentType === "mcq" && currentMCQ.question) {
       setFormData((prev) => ({
         ...prev,
-        questions: [...prev.questions, currentMCQ], // Add last question
+        questions: [...prev.questions, currentMCQ],
       }));
     }
-    onSubmit(formData);
+
+    // Submit the form
+    const assessmentResponse = await createAssessment(formData);
+    if (!assessmentResponse.success) {
+      alert(assessmentResponse.message);
+      return;
+    }
+
+    if (formData.assessmentType === "mcq") {
+      for (const question of formData.questions) {
+        const questionData = { assessment_id: assessmentResponse.id, ...question };
+        await addQuestion(questionData);
+      }
+    }
+
+    alert("Assessment created successfully!");
     onClose();
   };
 
@@ -108,9 +150,8 @@ export default function CreateAssessmentForm({
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           {isUpdateMode ? "Update Assessment" : "Create Assessment"}
         </h2>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+        
           <input
             type="text"
             name="title"
@@ -120,7 +161,6 @@ export default function CreateAssessmentForm({
             className="border p-2 rounded-lg w-full"
             required
           />
-
           <textarea
             name="description"
             placeholder="Description"
@@ -129,7 +169,6 @@ export default function CreateAssessmentForm({
             className="border p-2 rounded-lg w-full"
             required
           ></textarea>
-
           <input
             type="text"
             name="difficulty"
@@ -139,7 +178,6 @@ export default function CreateAssessmentForm({
             className="border p-2 rounded-lg w-full"
             required
           />
-
           <input
             type="text"
             name="category"
@@ -150,7 +188,6 @@ export default function CreateAssessmentForm({
             required
           />
 
-          {/* Assessment Type Dropdown */}
           <div>
             <label
               htmlFor="assessmentType"
@@ -173,7 +210,6 @@ export default function CreateAssessmentForm({
             </select>
           </div>
 
-          {/* Dynamic Fields Based on Selection */}
           {formData.assessmentType === "mcq" && (
             <div className="bg-gray-100 p-4 rounded-lg">
               <label className="block text-sm font-medium">
@@ -319,8 +355,14 @@ export default function CreateAssessmentForm({
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex justify-end space-x-3 mt-4">
+            <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-200"
+              >
+                Cancel
+              </button>
             <button
               type="submit"
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
