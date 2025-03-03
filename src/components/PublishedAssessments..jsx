@@ -12,9 +12,9 @@ export default function PublishedAssessments() {
       <div className="w-[1300px] items-center py-4 px-4 my-8 rounded-lg">
         {assessments.length > 0 ? (
           <ul role="list" className="bg-white divide-y divide-gray-100 rounded-lg">
-            {assessments.map((assessment) => (
+            {assessments.map((assessment, index) => (
               <li
-                key={assessment.id}
+                key={assessment.id || index}
                 className="flex justify-between gap-x-6 py-3 hover:bg-[#ebebf3] px-5"
               >
                     <h3>{assessment.title}</h3>

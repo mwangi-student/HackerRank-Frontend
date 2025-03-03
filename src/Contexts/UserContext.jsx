@@ -51,20 +51,65 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   // 🔹 Fetch Current Authenticated User from Backend
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      if (!authToken) return;
-      try {
-        const response = await axios.get("http://127.0.0.1:5000/current_user", {
-          headers: { Authorization: `Bearer ${authToken}` }
+  const fetchCurrentUser = async () => {
+    // console.log("User state:", user);
+    let token = localStorage.getItem("token");
+  
+    if (!token) {
+      console.log("No auth token found");
+      return;
+    }
+  
+    try {
+      console.log("Sending request with token:", token);
+  
+      const response = await fetch("http://127.0.0.1:5000/current_user", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.status === 401) {
+        console.log("Token expired. Trying refresh...");
+        const refreshResponse = await fetch("http://127.0.0.1:5000/refresh", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("refresh_token")}`,
+            "Content-Type": "application/json",
+          },
         });
-        setCurrentUser(response.data);
-      } catch (error) {
-        // toast.error("Failed to fetch authenticated user");
+  
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("token", refreshData.access_token);
+          token = refreshData.access_token;
+          console.log("New token received:", token);
+          return fetchCurrentUser(); // Retry fetch with new token
+        } else {
+          console.log("Refresh token failed. Redirecting to login...");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+          return;
+        }
       }
-    };
-    fetchCurrentUser();
-  }, [authToken]);
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response from server:", errorData);
+        throw new Error(errorData.msg || "Failed to fetch authenticated user");
+      }
+  
+      const data = await response.json();
+      console.log("Fetched user data:", data);
+      setCurrentUser(data);
+    } catch (error) {
+      console.error("Error fetching authenticated user:", error);
+    }
+  };
+  
+  
 
   // 🔹 Login Function
   const login = async (email, password) => {
@@ -78,37 +123,59 @@ export const UserProvider = ({ children }) => {
       setAuthToken(token);
       setCurrentUser(response.data.user);
       toast.success("Login successful");
-      return { success: true };
+      
+      return { success: true, role: response.data.user.role };
     } catch (error) {
       toast.error("Invalid credentials");
       return { success: false };
     }
   };
-
+  
   // 🔹 Logout Function
   const logout = async () => {
     console.log("Logout function triggered");
+  
     try {
-      if (!authToken) return;
-      await axios.post(
-        "http://127.0.0.1:5000/logout",
-        {},
-        {
-          headers: { Authorization: `Bearer ${authToken}` }
-        }
-      );
+      if (!authToken) {
+        console.log("No auth token found");
+        toast.error("No authentication token found. Please log in.");
+        return;
+      }
+  
+      const response = await fetch("http://127.0.0.1:5000/logout", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to log out");
+      }
+  
+      console.log("Logout request successful");
+      toast.success("Logged out successfully!");
+  
       await signOut(auth);
       localStorage.removeItem("token");
+  
       setCurrentUser(null);
       setAuthToken(null);
       setStudents([]);
       setTms([]);
-      toast.success("Logged out successfully");
-      window.location.href = "/";
+  
+      // setTimeout(() => {
+      //   window.location.href = "/";
+      // }, 2000); // Delay for better UX
     } catch (error) {
-      toast.error("Logout failed");
+      console.error("Logout error:", error);
+      toast.error("Logout failed. Please try again.");
     }
   };
+  
+  
 
   // 🔹 Reset Password Function
   const resetPassword = async (token, newPassword) => {

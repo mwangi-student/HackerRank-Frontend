@@ -9,46 +9,47 @@ const Login = ({ onClose, onToggle }) => {
   const { login, googleSignIn } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false); // Toggle state
+  const isFormValid = formData.email.trim() !== "" && formData.password.trim() !== "" && role !== "";
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
 
-  const handleRoleChange = (e) => {
-    setRole(e.target.value);
-  };
-
-  const isFormValid =
-    formData.username.trim() !== "" &&
-    formData.password.trim() !== "" &&
-    (role === "student" || role === "tm");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
-
+  
     setLoading(true);
-    const response = await login(formData.username, formData.password);
+    const response = await login(formData.email, formData.password);
     setLoading(false);
-
+  
     if (response.success) {
+      console.log("Selected Role:", role); // Debugging
+  
       if (role === "tm") {
         navigate("/tm/assessments");
-      } else {
+      } else if (role === "student") {
         navigate("/prepare");
       }
+  
       onClose();
     } else {
-      setError(response.message);
+      setError("Invalid credentials");
     }
   };
+  
+  const handleRoleChange = (e) => {
+    setRole(e.target.value);
+  };
+  
 
   const handleGoogleSignIn = async () => {
     try {
@@ -99,10 +100,10 @@ const Login = ({ onClose, onToggle }) => {
 
             <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
               <input
-                type="text"
-                name="username"
-                placeholder="Your username or email"
-                value={formData.username}
+                type="email"
+                name="email"
+                placeholder="Your email"
+                value={formData.email}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
