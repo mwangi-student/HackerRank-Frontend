@@ -14,5 +14,6 @@ import StudentList from "./StudentList";
 import CodeEditor from "./CodeEditor";
 import ChallengeQuestion from "./ChallengeQuestion";
 import ChallengeHeader from "./ChallengeHeader";
+import AssessmentHeader from "./AssessmentHeader";
 
-export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList, CodeEditor, ChallengeQuestion, ChallengeHeader };
+export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList, CodeEditor, ChallengeQuestion, ChallengeHeader, AssessmentHeader };
