@@ -15,8 +15,6 @@ import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
-import PasswordReset from "./pages/PasswordReset";
-import PasswordResetForm from "./pages/PasswordResetForm";
 import AdminAssessment from "./pages/tm/AdminAssessment";
 import Students from "./pages/tm/Students";
 import Statistics from "./pages/tm/Statistics";
@@ -24,6 +22,8 @@ import TakeChallenge from "./pages/student/TakeChallenge";
 import CodeChallenge from "./pages/student/CodeChallenge";
 import MCQQuiz from "./pages/student/McqQuiz";
 import McqResults from "./pages/student/McqResults";
+import PasswordReset from "./pages/PasswordReset"
+import PasswordResetForm from "./pages/PassworResetForm"
 
 function App() {
   return (
