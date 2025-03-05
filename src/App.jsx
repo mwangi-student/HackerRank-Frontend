@@ -49,7 +49,7 @@ function App() {
                     <Route path="/tm/students" element={<Students />} />
                     <Route path="/practice/code" element={<TakeChallenge />} />
                     <Route path="/assessment/challenge" element={<CodeChallenge />} />
-                    <Route path="/assessment/mcquestions" element={<MCQQuiz />} />
+                    <Route path="/assessment/mcquestions/:id" element={<MCQQuiz />} />
                     <Route path="/assessment/mcqresults" element={<McqResults />} />
                     <Route path="/assessment/statistics" element={<AssessmentsStatistics />} />
                   </Routes>

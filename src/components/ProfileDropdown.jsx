@@ -4,36 +4,71 @@ import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../Contexts/UserContext";
 
 const ProfileDropdown = () => {
-  const { logOutGoogleUser, logout } = useContext(UserContext);
+  const { user, logOutGoogleUser, logout, updateUser, deleteUser } = useContext(UserContext);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [userData, setUserData] = useState({ username: "", email: "", password: "" });
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (user) {
+      setUserData({
+        username: user.username,
+        email: user.email,
+        password: ""
+      });
+    }
+  }, [showModal, user]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle Logout with Toast Notifications
-  const handleLogOut = () => {
+  const handleLogOut = async () => {
     try {
-      logOutGoogleUser();
-      logout();
+      await logOutGoogleUser();
+      await logout();
       setShowDropdown(false);
     } catch (error) {
       toast.error("Error logging out. Please try again.");
     }
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(`/tm/${user.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(userData)
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || "Failed to update profile");
+      }
+
+      const result = await response.json();
+      toast.success(result.message);
+      updateUser(userData);
+      setShowModal(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update profile. Please try again.");
+    }
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Profile Button */}
       <button
         type="button"
         onClick={() => setShowDropdown(!showDropdown)}
@@ -58,7 +93,6 @@ const ProfileDropdown = () => {
         </svg>
       </button>
 
-      {/* Dropdown Menu */}
       {showDropdown && (
         <div
           className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5"
@@ -66,13 +100,16 @@ const ProfileDropdown = () => {
           aria-orientation="vertical"
           aria-labelledby="user-menu-button"
         >
-          <a
-            href="#"
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          <button
+            onClick={() => {
+              setShowModal(true);
+              setShowDropdown(false);
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             role="menuitem"
           >
             Your Profile
-          </a>
+          </button>
           <button
             onClick={handleLogOut}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -80,6 +117,62 @@ const ProfileDropdown = () => {
           >
             Sign out
           </button>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Your Profile</h2>
+            <form onSubmit={handleSubmit}>
+              <label className="block mb-2">
+                <span className="font-medium text-gray-700">Username</span>
+                <input
+                  type="text"
+                  name="username"
+                  value={userData.username}
+                  onChange={(e) => setUserData({ ...userData, username: e.target.value })}
+                  className="border p-2 rounded-lg w-full"
+                />
+              </label>
+              <label className="block mb-2">
+                <span className="font-medium text-gray-700">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                  className="border p-2 rounded-lg w-full"
+                />
+              </label>
+              <label className="block mb-2">
+                <span className="font-medium text-gray-700">Password</span>
+                <input
+                  type="password"
+                  name="password"
+                  value={userData.password}
+                  onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+                  className="border p-2 rounded-lg w-full"
+                  placeholder="Leave blank to keep current password"
+                />
+              </label>
+              <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
