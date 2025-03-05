@@ -11,19 +11,18 @@ import PublicRoute from "./Contexts/PublicRoute";
 
 import Discover from "./pages/student/Discover";
 import Home from "./pages/student/Home";
-import Compete from "./pages/student/Compete";
 import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
 import PasswordReset from "./pages/PasswordReset";
-import PasswordResetForm from "./pages/PassworResetForm";
+import PasswordResetForm from "./pages/PassworResetForm"
 import AdminAssessment from "./pages/tm/AdminAssessment";
 import Students from "./pages/tm/Students";
-import Statistics from "./pages/tm/Statistics";
 import TakeChallenge from "./pages/student/TakeChallenge";
 import CodeChallenge from "./pages/student/CodeChallenge";
 import MCQQuiz from "./pages/student/McqQuiz";
 import McqResults from "./pages/student/McqResults";
+import AssessmentsStatistics from "./pages/tm/AssessmentsStatistics";
 
 function App() {
   return (
@@ -41,7 +40,6 @@ function App() {
                     <Route path="/discover" element={<PublicRoute element={<Discover />} />} />
 
                     {/* Private routes (for authenticated users) */}
-                    <Route path="/compete" element={<Compete />} />
                     <Route path="/prepare" element={<Prepare />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/practice/:language" element={<Challenges />} />
@@ -49,11 +47,11 @@ function App() {
                     <Route path="/reset-password/:token" element={<PasswordResetForm />} />
                     <Route path="/tm/assessments" element={<AdminAssessment />} />
                     <Route path="/tm/students" element={<Students />} />
-                    <Route path="/tm/stats" element={<Statistics />} />
                     <Route path="/practice/code" element={<TakeChallenge />} />
                     <Route path="/assessment/challenge" element={<CodeChallenge />} />
                     <Route path="/assessment/mcquestions/:id" element={<MCQQuiz />} />
                     <Route path="/assessment/mcqresults" element={<McqResults />} />
+                    <Route path="/assessment/statistics" element={<AssessmentsStatistics />} />
                   </Routes>
                 </Router>
               </CodeChallengeProvider>
