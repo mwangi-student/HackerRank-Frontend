@@ -1,12 +1,25 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
-import  UserContext  from "./UserContext";
+import UserContext from "./UserContext";
 
 const AssessmentContext = createContext();
 
 export const AssessmentProvider = ({ children }) => {
-  const { authToken, user } = useContext(UserContext); // Extracts authToken and user info
+  const { authToken, fetchCurrentUser } = useContext(UserContext);
   const [assessments, setAssessments] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Fetch user details on mount
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await fetchCurrentUser();
+      if (userData) {
+        setCurrentUser(userData);
+        console.log("Current user in AssessmentContext:", userData);
+      }
+    };
+    loadUser();
+  }, [fetchCurrentUser]);
 
   // Fetch all assessments
   useEffect(() => {
@@ -39,11 +52,12 @@ export const AssessmentProvider = ({ children }) => {
 
   // Create a new assessment (ensuring tm_id is included)
   const createAssessment = async (data) => {
-    if (!user?.tm_id) {
+    const user = await fetchCurrentUser(); // Fetch user details before creating assessment
+    if (!user?.id) {
       return { success: false, message: "Missing required tm_id" };
     }
 
-    const requestData = { ...data, tm_id: user.tm_id }; // Add tm_id to request
+    const requestData = { ...data, tm_id: user.id };
 
     try {
       const response = await axios.post("http://127.0.0.1:5000/assessment", requestData, {
@@ -91,7 +105,16 @@ export const AssessmentProvider = ({ children }) => {
 
   return (
     <AssessmentContext.Provider
-      value={{ assessments, getAssessment, createAssessment, updateAssessment, deleteAssessment }}
+      value={{
+        assessments,
+        setAssessments,
+        getAssessment,
+        authToken,
+        createAssessment,
+        updateAssessment,
+        deleteAssessment,
+        currentUser, // Expose the fetched user
+      }}
     >
       {children}
     </AssessmentContext.Provider>

@@ -16,7 +16,7 @@ import Prepare from "./pages/student/Prepare";
 import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
 import PasswordReset from "./pages/PasswordReset";
-import PasswordResetForm from "./pages/PasswordResetForm";
+import PasswordResetForm from "./pages/PassworResetForm";
 import AdminAssessment from "./pages/tm/AdminAssessment";
 import Students from "./pages/tm/Students";
 import Statistics from "./pages/tm/Statistics";
@@ -52,7 +52,7 @@ function App() {
                     <Route path="/tm/stats" element={<Statistics />} />
                     <Route path="/practice/code" element={<TakeChallenge />} />
                     <Route path="/assessment/challenge" element={<CodeChallenge />} />
-                    <Route path="/assessment/mcquestions" element={<MCQQuiz />} />
+                    <Route path="/assessment/mcquestions/:id" element={<MCQQuiz />} />
                     <Route path="/assessment/mcqresults" element={<McqResults />} />
                   </Routes>
                 </Router>
