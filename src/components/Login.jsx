@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import PropTypes from "prop-types";
@@ -6,7 +6,9 @@ import UserContext from "../Contexts/UserContext";
 import ForgotPassword from "../pages/PasswordReset";
 
 const Login = ({ onClose, onToggle }) => {
-  const { login, googleSignIn } = useContext(UserContext);
+  const { googleSignIn, setCurrentUser } = useContext(UserContext);
+  const { login, setAuthToken } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -17,34 +19,54 @@ const Login = ({ onClose, onToggle }) => {
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false); // Toggle state
   const isFormValid = formData.email.trim() !== "" && formData.password.trim() !== "" && role !== "";
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    if (token && user) {
+      setAuthToken(token);
+      setCurrentUser(user);
+      navigate(user.role === "tm" ? "/tm/assessments" : "/prepare");
+    }
+  }, []);
+  
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
   
     setLoading(true);
     const response = await login(formData.email, formData.password);
+    console.log("Login Response:", response);
     setLoading(false);
   
-    if (response.success) {
-      console.log("Selected Role:", role); // Debugging
-  
-      if (role === "tm") {
-        navigate("/tm/assessments");
-      } else if (role === "student") {
-        navigate("/prepare");
-      }
-  
-      onClose();
-    } else {
+    // 🔹 Check for access_token instead of success
+    if (!response || !response.access_token) {
       setError("Invalid credentials");
+      return;
     }
+  
+    // 🔹 Extract the role from API response
+    const userRole = response.user?.role;
+    console.log("Selected Role from API:", userRole);
+  
+    // 🔹 Navigate based on role
+    if (userRole === "tm") {
+      navigate("/tm/assessments");
+    } else if (userRole === "student") {
+      navigate("/prepare");
+    } else {
+      console.error("Role not recognized:", userRole);
+    }
+  
+    onClose();
   };
+  
   
   const handleRoleChange = (e) => {
     setRole(e.target.value);

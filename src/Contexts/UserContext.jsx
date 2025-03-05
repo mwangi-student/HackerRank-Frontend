@@ -316,8 +316,10 @@ export const UserProvider = ({ children }) => {
         googleSignIn,
         logOutGoogleUser,
         setCurrentUser, authToken, setAuthToken,
+
         fetchCurrentUser,
         updateUser
+
       }}
       // authToken, setAuthToken, currentUser, setCurrentUser, login, googleSignIn
     >
