@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AssessmentHeader } from "../../components";
+import { AssessmentHeader, CountdownTimer } from "../../components";
 
 const mcqQuestions = [
   {
@@ -61,6 +61,7 @@ export default function MCQQuiz() {
         <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           📝 MCQ Quiz
         </h2>
+        <div><CountdownTimer /></div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {mcqQuestions.map((q, index) => (
             <div
