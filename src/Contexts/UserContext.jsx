@@ -15,13 +15,27 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [authToken, setAuthToken] = useState(() =>
-    localStorage.getItem("token")
-  );
+  const [authToken, setAuthToken] = useState(() => {
+    try {
+      return localStorage.getItem("token");
+    } catch (error) {
+      console.error("Storage access error:", error);
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (authToken) {
+      localStorage.setItem("token", authToken);
+    } else {
+      localStorage.removeItem("token"); // Clear token when user logs out
+    }
+  }, [authToken]);
+  
   const [students, setStudents] = useState([]);
   const [tms, setTms] = useState([]);
 
-  // 🔹 Google Sign-In Function
+  //  Google Sign-In Function
   const googleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -32,7 +46,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Logout Google User
+  //  Logout Google User
   const logOutGoogleUser = async () => {
     try {
       await signOut(auth);
@@ -52,84 +66,108 @@ export const UserProvider = ({ children }) => {
 
   // 🔹 Fetch Current Authenticated User from Backend
   const fetchCurrentUser = async () => {
-    // console.log("User state:", user);
+    console.log("fetchCurrentUser function called"); // Ensure function runs
+
     let token = localStorage.getItem("token");
-  
+    console.log("Retrieved token from localStorage:", token);
+
     if (!token) {
-      console.log("No auth token found");
-      return;
+        console.log("No auth token found");
+        return;
     }
-  
+
     try {
-      console.log("Sending request with token:", token);
-  
-      const response = await fetch("http://127.0.0.1:5000/current_user", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (response.status === 401) {
-        console.log("Token expired. Trying refresh...");
-        const refreshResponse = await fetch("http://127.0.0.1:5000/refresh", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("refresh_token")}`,
-            "Content-Type": "application/json",
-          },
+        console.log("Sending request with token:", token);
+
+        const response = await fetch("http://127.0.0.1:5000/current_user", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
         });
-  
-        if (refreshResponse.ok) {
-          const refreshData = await refreshResponse.json();
-          localStorage.setItem("token", refreshData.access_token);
-          token = refreshData.access_token;
-          console.log("New token received:", token);
-          return fetchCurrentUser(); // Retry fetch with new token
-        } else {
-          console.log("Refresh token failed. Redirecting to login...");
-          localStorage.removeItem("token");
-          window.location.href = "/login";
-          return;
+
+        console.log("Response received:", response);
+
+        if (response.status === 401) {
+            console.log("Token expired. Trying refresh...");
+            const refreshToken = localStorage.getItem("refresh_token");
+            console.log("Refresh token:", refreshToken);
+
+            const refreshResponse = await fetch("http://127.0.0.1:5000/refresh", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${refreshToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("Refresh response:", refreshResponse);
+
+            if (refreshResponse.ok) {
+                const refreshData = await refreshResponse.json();
+                console.log("New token received:", refreshData.access_token);
+                localStorage.setItem("token", refreshData.access_token);
+                return fetchCurrentUser(); // Retry with new token
+            } else {
+                console.log("Refresh token failed. Redirecting to login...");
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+                return;
+            }
         }
-      }
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error response from server:", errorData);
-        throw new Error(errorData.msg || "Failed to fetch authenticated user");
-      }
-  
-      const data = await response.json();
-      console.log("Fetched user data:", data);
-      setCurrentUser(data);
+
+        if (!response.ok) {
+            console.error("Failed to fetch user:", response.status);
+            return;
+        }
+
+        const userData = await response.json();
+        console.log("Fetched user data:", userData);
+        return userData;
+
     } catch (error) {
-      console.error("Error fetching authenticated user:", error);
+        console.error("Error fetching user:", error);
     }
-  };
-  
-  
+};
+
 
   // 🔹 Login Function
   const login = async (email, password) => {
+    if (!email || !password) {
+      console.error("Email or password is missing");
+      return null;  // 🔹 Return null explicitly if inputs are missing
+    }
+  
     try {
-      const response = await axios.post("http://127.0.0.1:5000/login", {
-        email,
-        password
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      const token = response.data.access_token;
-      localStorage.setItem("token", token);
-      setAuthToken(token);
-      setCurrentUser(response.data.user);
-      toast.success("Login successful");
-      
-      return { success: true, role: response.data.user.role };
-    } catch (error) {
-      toast.error("Invalid credentials");
-      return { success: false };
+  
+      const data = await response.json();
+      console.log("Login response data:", data);
+  
+      if (data.access_token) {
+        localStorage.setItem("authToken", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setAuthToken(data.access_token);
+        setCurrentUser(data.user);
+  
+        // ✅ Fetch and update user details immediately after login
+        // await fetchCurrentUser();
+  
+        toast.success("Login successful");
+        return data; // 🔹 Ensure data is returned here
+      }
+    } catch (error) {  // ✅ Catch block properly closes try block
+      console.error("Login Error:", error);
+      toast.error("Login request failed");
+      return null; // 🔹 Return null in case of error
     }
   };
+  
   
   // 🔹 Logout Function
   const logout = async () => {
@@ -200,7 +238,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Register a New Student
+  //  Register a New Student
   const registerStudent = async (studentData) => {
     try {
       const response = await axios.post(
@@ -219,7 +257,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Add a TM (Teacher Mentor)
+  //  Add a TM (Teacher Mentor)
   const addTM = async (tmData) => {
     try {
       const response = await axios.post("/tm", tmData, {
@@ -234,6 +272,35 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+    // 🔹 Update Current User Function
+  const updateUser = async (updatedUserData) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/update_user", {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUserData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user");
+      }
+
+      const updatedUser = await response.json();
+      setCurrentUser(updatedUser); // Update user context with new data
+      localStorage.setItem("user", JSON.stringify(updatedUser)); // Update local storage
+      toast.success("User updated successfully!");
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Failed to update user");
+      return { success: false };
+    }
+  };
+
+
   // 🔹 Providing Context Values
   return (
     <UserContext.Provider
@@ -247,8 +314,12 @@ export const UserProvider = ({ children }) => {
         registerStudent,
         addTM,
         googleSignIn,
-        logOutGoogleUser
+        logOutGoogleUser,
+        setCurrentUser, authToken, setAuthToken,
+        fetchCurrentUser,
+        updateUser
       }}
+      // authToken, setAuthToken, currentUser, setCurrentUser, login, googleSignIn
     >
       {children}
     </UserContext.Provider>
