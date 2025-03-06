@@ -7,35 +7,37 @@ It enables Technical Mentors (T.M.) to create and manage assessments while allow
 
 ## Features
 ### For Technical Mentors (T.M.):
-Create & manage assessments (MCQs, subjective, and coding challenges)
-Publish assessments and send invitations to students
-View sorted student performance based on scores
-Review student answers and provide feedback
-Set a time limit for test auto-submission
-Release grades
+* Create & manage assessments (MCQs, subjective, and coding challenges)
+* Publish assessments and send invitations to students
+* View sorted student performance based on scores
+* Review student answers and provide feedback
+* Set a time limit for test auto-submission
+* Release grades
 
 ### For Students:
-Log in and access assigned assessments
-Accept invitations and receive real-time notifications
-Monitor countdown timer for active tests
-Take trial assessments before the actual test
-Submit coding solutions with BDD, pseudocode, and code
-Receive feedback from mentors
+* Log in and access assigned assessments
+* Accept invitations and receive real-time notifications
+* Monitor countdown timer for active tests
+* Take trial assessments before the actual test
+* Submit coding solutions with BDD, pseudocode, and code
+* Receive feedback from mentors
 
 ## Technologies Used
-Frontend: React 
-Authentication: Firebase Authentication, JWT & Google OAuth
-API Integration: Piston API
-Styling: CSS, Material UI
-State Management: React Context API 
-Routing: React Router
+* Frontend: React 
+* Authentication: Firebase Authentication, JWT & Google OAuth
+* API Integration: Piston API
+* Styling: CSS, Material UI
+* State Management: React Context API 
+* Routing: React Router
 
 ## Installation & SetupTo set up the frontend locally, follow these steps:
-Clone the repository:
+* Clone the repository:
 git clone git@github.com:mwangi-student/HackerRank-Frontend.git
-Install Dependencies:
+
+* Install Dependencies:
 npm install
-Start the development server:
+
+* Start the development server:
 npm run dev
 
 ## Challenges faced
