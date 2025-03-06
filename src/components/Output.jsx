@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { executeCode } from "../api";
 import { useNavigate } from "react-router-dom";
 
 const output_1 = "Antony";
 const output_2 = "David";
-const output_3 = "Brian"
+const output_3 = "Brian";
 
-const Output = ({ editorRef, language }) => {
-  const navigate = useNavigate()
+const Output = ({ editorRef, language, assessmentId, authToken }) => {
+  const navigate = useNavigate();
   const [output, setOutput] = useState([]);
   const [expectedOutput, setExpectedOutput] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isCorrect, setIsCorrect] = useState(null);
+  const [assessmentInvites, setAssessmentInvites] = useState([]);
 
   const getAnswer = () => {
-    setExpectedOutput(output_1, output_2, output_3)
-  }
+    setExpectedOutput([output_1, output_2, output_3]);
+  };
+
   const runCode = async () => {
     getAnswer();
     const sourceCode = editorRef.current.getValue();
@@ -26,12 +28,10 @@ const Output = ({ editorRef, language }) => {
       setIsLoading(true);
       const { run: result } = await executeCode(language, sourceCode);
 
-      // Split output into array of lines and trim spaces
       const outputLines = result.output.split("\n").map((line) => line.trim());
       setOutput(outputLines);
       setIsError(!!result.stderr);
 
-      // Compare each line of output with expected
       const allCorrect =
         outputLines.length === expectedOutput.length &&
         outputLines.every((line, index) => line === expectedOutput[index]);
@@ -45,30 +45,87 @@ const Output = ({ editorRef, language }) => {
     }
   };
 
-  const submitCode = async () => {
-    const sourceCode = editorRef.current.getValue();
-    if (!sourceCode) return;
+  useEffect(() => {
+    const fetchAssessmentInvites = async () => {
+      if (!authToken) return;
+      try {
+        const response = await fetch("http://127.0.0.1:5000/assessment-invites", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAssessmentInvites(data);
+        } else {
+          console.error("Failed to fetch assessment invites");
+        }
+      } catch (error) {
+        console.error("Error fetching assessment invites:", error);
+      }
+    };
+
+    fetchAssessmentInvites();
+  }, [authToken]);
+
+  const updateAssessmentInvite = async (inviteId, complete) => {
     try {
-      setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-      await fetch("http://localhost:5000/store_output", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question_id: questionId, output: result.output }),
+      const response = await fetch(`http://127.0.0.1:5000/assessment-invites/${inviteId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ complete }),
       });
+
+      if (!response.ok) throw new Error("Failed to update assessment invite");
     } catch (error) {
-      console.error(error);
-      alert(error.message || "Unable to run code");
+      console.error("Error updating assessment invite:", error);
+    }
+  };
+
+  const createSubmission = async (submissionData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/code-submissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      if (!response.ok) throw new Error("Failed to create submission");
+
+      const newSubmission = await response.json();
+      return newSubmission;
+    } catch (error) {
+      console.error("Error creating submission:", error);
+      return null;
     } finally {
       setIsSubmitting(false);
-      navigate("/prepare")
     }
+  };
 
-  }
+  const handleSubmit = async () => {
+    const sourceCode = editorRef.current.getValue();
+    if (!sourceCode) return;
 
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    submitCode();
+    const submissionData = {
+      assessmentId,
+      code: sourceCode,
+      output: output.join("\n"),
+      isCorrect,
+    };
+
+    const newSubmission = await createSubmission(submissionData);
+    if (newSubmission) {
+      await updateAssessmentInvite(assessmentId, true);
+      alert("Submission successful and assessment marked as complete!");
+    } else {
+      alert("Submission failed");
+    }
   };
 
   return (
