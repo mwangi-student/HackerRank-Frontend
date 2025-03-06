@@ -19,30 +19,44 @@ export const QuestionsProvider = ({ children }) => {
         }
     }, [authToken]);
 
-    // Add a new question
-    const addQuestion = async (questionData) => {
-        try {
-            const response = await fetch("http://127.0.0.1:5000/questions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${authToken}`
-                },
-                body: JSON.stringify(questionData)
-            });
-            
-            if (response.ok) {
-                const newQuestion = await response.json();
-                setQuestions(prev => [...prev, newQuestion]);
-                return { success: true, message: "Question added successfully" };
-            } else {
-                return { success: false, message: "Failed to add question" };
-            }
-        } catch (error) {
-            console.error("Error adding question:", error);
-            return { success: false, message: "Error adding question" };
+// Add a new question
+const addQuestion = async (questionData) => {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/questions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify({
+                assessment_id: questionData.assessment_id, // Ensure it's included
+                question_text: questionData.question_text,
+                choice_a: questionData.choice_a,
+                choice_b: questionData.choice_b,
+                choice_c: questionData.choice_c,
+                choice_d: questionData.choice_d,
+                correct_answer: questionData.correct_answer,
+            }),
+        });
+
+        const responseData = await response.json();
+
+        if (response.ok) {
+            setQuestions((prev) => [
+                ...prev,
+                { ...questionData, id: responseData.id }, // Ensure new question is structured correctly
+            ]);
+            return { success: true, message: "Question added successfully" };
+        } else {
+            console.error("Failed to add question:", responseData);
+            return { success: false, message: responseData.error || "Failed to add question" };
         }
-    };
+    } catch (error) {
+        console.error("Error adding question:", error);
+        return { success: false, message: "Error adding question" };
+    }
+};
+
 
     // Delete a question
     const deleteQuestion = async (id) => {
