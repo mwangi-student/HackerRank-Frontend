@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from "react";
 
-export default function CountdownTimer() {
-  const [inputMinutes, setInputMinutes] = useState(""); // User enters time in minutes
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });  const [isRunning, setIsRunning] = useState(false);
+export default function CountdownTimer({ time }) {
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [isRunning, setIsRunning] = useState(false);
   const [timerId, setTimerId] = useState(null);
+
+  useEffect(() => {
+    if (time && !isNaN(time) && time > 0) {
+      const totalSeconds = time * 60;
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      setTimeLeft({ hours, minutes, seconds });
+      setIsRunning(true);
+    }
+  }, [time]);
 
   useEffect(() => {
     if (isRunning) {
@@ -14,7 +25,7 @@ export default function CountdownTimer() {
           if (hours === 0 && minutes === 0 && seconds === 0) {
             clearInterval(id);
             setIsRunning(false);
-            submitQuiz(); // Auto-submit when timer reaches zero
+            submitQuiz();
             return prevTime;
           }
 
@@ -41,14 +52,14 @@ export default function CountdownTimer() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        setIsRunning(false); // Pause the timer when tab is inactive
+        setIsRunning(false); // Pause timer when tab is inactive
       } else {
-        setIsRunning(true); // Resume the timer when tab is active
+        setIsRunning(true); // Resume timer when tab is active
       }
     };
 
     const handleFocus = () => {
-      setIsRunning(true); // Ensure it resumes when user switches back to the tab
+      setIsRunning(true); // Resume timer when tab gains focus
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -59,6 +70,7 @@ export default function CountdownTimer() {
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
+
   const submitQuiz = () => {
     setIsRunning(false);
     if (timerId) clearInterval(timerId);

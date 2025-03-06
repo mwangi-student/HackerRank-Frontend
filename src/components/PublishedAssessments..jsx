@@ -1,10 +1,13 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function PublishedAssessments() {
     const assessments = [
         { title: "Python Max Number Generator challenge" },
         {title: "React and Tailwind Quiz (multiple choices)"}
     ]
+  
+    const navigate = useNavigate()
 
   return (
     <div className="flex-wrap gap-5">
@@ -18,7 +21,7 @@ export default function PublishedAssessments() {
                 className="flex justify-between gap-x-6 py-3 hover:bg-[#ebebf3] px-5"
               >
                     <h3>{assessment.title}</h3>
-                    <button className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250">
+                <button onClick={navigate("/assessment/statistics")} className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250">
             view
           </button>
               </li>
