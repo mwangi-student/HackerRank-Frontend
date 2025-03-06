@@ -9,11 +9,16 @@ export default function StudentList() {
     // Fetch student data from the backend
     const fetchStudents = async () => {
       try {
-        const response = await fetch('/students', {
+        const token = localStorage.getItem('token'); // Retrieve the JWT token
+        if (!token) {
+          throw new Error('No token found');
+        }
+
+        const response = await fetch('http://127.0.0.1:5000/students', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Include JWT token if required
+            'Authorization': `Bearer ${token}`, // Include JWT token
           },
         });
 

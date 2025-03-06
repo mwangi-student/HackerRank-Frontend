@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { userScores } from "../data/user-scores";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -19,14 +18,11 @@ export default function UserAssessmentList() {
     }
   }, [authToken]);
 
-  const handleViewScore = (submissionId) => {
-    const submission = submissions.find(sub => sub.id === submissionId);
-    if (submission) {
-      if (submission.assessmentType === "code-challenge") {
-        navigate("/grade/challenge", { state: { submission } });
-      } else if (submission.assessmentType === "mcq-assessment-type") {
-        navigate("/grade/mcquestions", { state: { submission } });
-      }
+  const handleViewScore = (submission) => {
+    if (submission.assessment_type === "mcq-assessment-type" || submission.assessment_type === "mcq") {
+      navigate("/grade/mcq-submission", { state: { submission } });
+    } else if (submission.assessment_type === "code-challenge") {
+      navigate("/grade/code-challenge", { state: { submission } });
     }
   };
 
@@ -39,23 +35,28 @@ export default function UserAssessmentList() {
       <div className="w-[900px] items-center py-4 px-4 my-8 rounded-lg">
         <div className="w-[680px] mx-2 mb-2 flex flex-row justify-between">
           <span className="font-medium text-lg">Users</span>
-          <span className="font-medium text-lg">Scores</span>
+          <span className="font-medium text-lg">Submission Time</span>
         </div>
-        {userScores.length > 0 ? (
+        {submissions.length > 0 ? (
           <ul
             role="list"
             className="bg-white divide-y divide-gray-100 rounded-lg"
           >
-            {userScores.map((user, index) => (
+            {submissions.map((submission, index) => (
               <li
-                key={user.id || index}
+                key={submission.id || index}
                 className="flex justify-between gap-x-6 py-3 hover:bg-[#ebebf3] px-5"
               >
-                <h3>{user.name}</h3>
+                <div>
+                  <h3>{submission.student_username}</h3>
+                  <p className="text-sm text-gray-500">{submission.assessment_title}</p>
+                </div>
                 <div className="flex flex-row gap-12">
-                  <span className="font-medium">{user.scores}%</span>
+                  <span className="font-medium">
+                    {new Date(submission.submitted_at).toLocaleString()}
+                  </span>
                   <button 
-                    onClick={() => handleViewScore(user.id)} 
+                    onClick={() => handleViewScore(submission)} 
                     className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250"
                   >
                     view solution

@@ -95,15 +95,17 @@ const Navbar = () => {
       </nav>
 
       {/* Profile Modal */}
-      <ProfileModal
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
-        userData={user} // Pass user data from context
-        onSave={(updatedUser) => {
-          console.log("Updated Profile:", updatedUser);
-          setIsProfileOpen(false);
-        }}
-      />
+      {isProfileOpen && (
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+          userData={user} // Pass user data from context
+          onSave={(updatedUser) => {
+            console.log("Updated Profile:", updatedUser);
+            setIsProfileOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };
