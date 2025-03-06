@@ -59,22 +59,46 @@ export const CodeChallengeProvider = ({ children }) => {
     }
   };
 
-  // Create a new code challenge
-  const createCodeChallenge = async (challengeData) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/code-challenges", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify(challengeData),
-      });
-      if (response.ok) fetchCodeChallenges();
-    } catch (error) {
-      console.error("Error creating challenge:", error);
+// Create a new code challenge
+const createCodeChallenge = async (challengeData) => {
+  try {
+    const response = await fetch("/code-challenges", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        assessment_id: challengeData.assessment_id, // Ensure this is included
+        task: challengeData.task,
+        example: challengeData.example,
+        input_format: challengeData.inputFormat,
+        output_format: challengeData.outputFormat,
+        constraints: challengeData.constraints,
+        sample_input_1: challengeData.sampleInput_1,
+        sample_input_2: challengeData.sampleInput_2,
+        sample_input_3: challengeData.sampleInput_3,
+        sample_input_4: challengeData.sampleInput_4,
+        sample_output_1: challengeData.sample_output_1,
+        sample_output_2: challengeData.sample_output_2,
+        sample_output_3: challengeData.sample_output_3,
+        sample_output_4: challengeData.sample_output_4,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error creating challenge:", errorData);
+      return;
+
     }
-  };
+
+    fetchCodeChallenges(); // Refresh the challenge list
+  } catch (error) {
+    console.error("Error creating challenge:", error);
+  }
+};
+
 
   // Update a code challenge
   const updateCodeChallenge = async (id, updatedData) => {

@@ -8,8 +8,7 @@ export default function CreateAssessmentForm({
   isUpdateMode,
   initialData,
 }) {
-
-  const { fetchCurrentUser } = useContext(UserContext); // Use fetchCurrentUser instead of user
+  const { fetchCurrentUser } = useContext(UserContext);
   const { createAssessment: createAssessmentFromContext, setAssessments } = useContext(AssessmentContext);
 
   const [formData, setFormData] = useState({
@@ -20,85 +19,25 @@ export default function CreateAssessmentForm({
     assessment_type: "",
     constraints: "",
     time_limit: "",
-    publish: false,
-    invite_students: [],
+    publish: false, // Default set to false
   });
 
   useEffect(() => {
     if (isUpdateMode && initialData) {
       setFormData({
         ...initialData,
-        invite_students: initialData.invite_students || [],
+        publish: false, // Ensure publish is always false
       });
     }
   }, [isUpdateMode, initialData]);
 
   const handleChange = (e) => {
-    const { name, type, checked, value } = e.target;
+    const { name, type, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
-
-  const handleInviteChange = (e) => {
-    const value = e.target.value.split(",").map((email) => email.trim());
-    setFormData((prev) => ({
-      ...prev,
-      invite_students: value,
-    }));
-  };
-
-  const createAssessment = async (data) => {
-    console.log("Fetching current user...");
-    
-    const userData = await fetchCurrentUser();
-    console.log("Fetched user data:", userData);
-  
-    if (!userData?.id) {
-      return { success: false, message: "Missing required user ID" };
-    }
-  
-    const authToken = localStorage.getItem("authToken");
-    console.log("Auth Token:", authToken);
-  
-    if (!authToken) {
-      return { success: false, message: "Authentication token missing" };
-    }
-  
-    const requestData = {
-      ...data,
-      tm_id: userData.id,
-    };
-  
-    try {
-      const response = await fetch("http://127.0.0.1:5000/assessment", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Failed to create assessment:", errorData);
-        return { success: false, message: errorData.error || "Failed to create assessment" };
-      }
-  
-      const responseData = await response.json();
-      
-      // Update state using setAssessments from context
-      setAssessments((prev) => [...prev, { ...requestData, id: responseData.id }]);
-  
-      return { success: true, message: "Assessment created successfully" };
-    } catch (error) {
-      console.error("Error submitting assessment:", error);
-      return { success: false, message: "Failed to create assessment" };
-    }
-  };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -108,9 +47,7 @@ export default function CreateAssessmentForm({
       return;
     }
 
-    console.log("Fetching user before assessment submission...");
     const assessmentResponse = await createAssessmentFromContext(formData);
-
 
     if (!assessmentResponse.success) {
       alert(assessmentResponse.message);
@@ -191,25 +128,18 @@ export default function CreateAssessmentForm({
             className="border p-2 rounded-lg w-full"
             required
           />
-          <input
-            type="text"
-            name="invite_students"
-            placeholder="Invite Students (comma-separated emails)"
-            value={formData.invite_students.join(", ")}
-            onChange={handleInviteChange}
-            className="border p-2 rounded-lg w-full"
-          />
+
           <div className="flex space-x-4">
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+              className="bg-green-500 text-white py-2 px-4 rounded-lg"
             >
               {isUpdateMode ? "Update" : "Create"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-500 text-white py-2 px-4 rounded-lg"
+              className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-200"
             >
               Cancel
             </button>
