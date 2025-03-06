@@ -19,8 +19,30 @@ export const QuestionsProvider = ({ children }) => {
         }
     }, [authToken]);
 
-// Add a new question
-const addQuestion = async (questionData) => {
+    const getQuestions = async (id) => {
+        try {
+          if (!authToken) {
+            console.error("No auth token found. User may need to log in.");
+            return null;
+          }
+    
+          const response = await fetch(`http://127.0.0.1:5000/questions/${id}`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          });
+    
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status} - ${response.statusText}`);
+          }
+    
+          return await response.json();
+        } catch (error) {
+          console.error("Error fetching assessments questions:", error);
+          return null;
+        }
+      };
+
+    // Add a new question
+  const addQuestion = async (questionData) => {
     try {
         const response = await fetch("http://127.0.0.1:5000/questions", {
             method: "POST",
@@ -50,6 +72,7 @@ const addQuestion = async (questionData) => {
         } else {
             console.error("Failed to add question:", responseData);
             return { success: false, message: responseData.error || "Failed to add question" };
+
         }
     } catch (error) {
         console.error("Error adding question:", error);

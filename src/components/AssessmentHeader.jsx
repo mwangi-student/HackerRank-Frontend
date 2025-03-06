@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function AssessmentHeader() {
+export default function AssessmentHeader({assessment}) {
   return (
     <div className="font-[Satoshi]">
       <nav className="bg-[#192533] px-2 py-2">
@@ -43,7 +43,7 @@ export default function AssessmentHeader() {
               <Link
                 className="text-lg font-medium mt-[10px] text-slate-400"
               >
-                Assessment
+                {assessment.title}
               </Link>
             </div>
           </div>

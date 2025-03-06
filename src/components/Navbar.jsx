@@ -52,30 +52,6 @@ const Navbar = () => {
                     Prepare
                   </button>
                 </li>
-                <li>
-                  <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-base font-medium ml-6${
-                      activeLink === "/compete"
-                        ? "border-b-2 border-[#18C8E7] text-base ml-6 text-blue-300"
-                        : ""
-                    }`}
-                    onClick={() => handleNavClick("/compete")}
-                  >
-                    Compete
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-base font-medium ml-6${
-                      activeLink === "/leaderboard"
-                        ? "border-b-2 border-[#18C8E7] text-base ml-6 text-blue-300"
-                        : ""
-                    }`}
-                    onClick={() => handleNavClick("/leaderboard")}
-                  >
-                    Leaderboard
-                  </button>
-                </li>
               </ul>
             ) : (
               <ul className="flex items-center space-x-2">
@@ -89,18 +65,6 @@ const Navbar = () => {
                     onClick={() => handleNavClick("/")}
                   >
                     Home
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
-                      activeLink === "/discover"
-                        ? "border-b-2 border-[#18C8E7] text-sm ml-6 text-blue-300"
-                        : ""
-                    }`}
-                    onClick={() => handleNavClick("/discover")}
-                  >
-                    Discover
                   </button>
                 </li>
               </ul>

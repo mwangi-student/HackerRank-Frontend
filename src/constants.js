@@ -10,12 +10,12 @@ export const LANGUAGE_VERSIONS = {
 };
 
 export const CODE_SNIPPETS = {
-  javascript: `\nfunction greet(name) {\n\t// code here\n}\n\n// don't remove this function call!\nconsole.log(greet("Antony"))\n`,
-  typescript: `\nfunction greet(name: string): void {\n\t// code here\n}\n\n// don't remove this function call!\nconsole.log(greet("Antony"))\n`,
-  python: `\ndef greet(name):\n\t# code here\n\n# don't remove this function call!\nprint(greet("Antony"))\n`,
-  java: `\npublic class Main {\n\tstatic void greet(String name) {\n\t\t// code here\n\t}\n\n\t// don't remove this function call!\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println(greet("Antony"));\n\t}\n}\n`,
+  javascript: `\nfunction greet(name) {\n\t// code here\n}\n\n// don't remove this function call!\nconsole.log(greet("Antony"))\nconsole.log(greet("Brian"))\nconsole.log(greet("Anne"))\nconsole.log(greet("Faith"))\n`,
+  typescript: `\nfunction greet(name: string): void {\n\t// code here\n}\n\n// don't remove this function call!\nconsole.log(greet("Antony"))\nconsole.log(greet("Brian"))\nconsole.log(greet("Anne"))\nconsole.log(greet("Faith"))\n`,
+  python: `\ndef greet(name):\n\t# code here\n\n# don't remove this function call!\nprint(greet("Antony"))\nprint(greet("Brian"))\nprint(greet("Anne"))\nprint(greet("Faith"))\n`,
+  java: `\npublic class Main {\n\tstatic void greet(String name) {\n\t\t// code here\n\t}\n\n\t// don't remove this function call!\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println(greet("Antony"));\n\t}\n}\n{\n\t\tSystem.out.println(greet("Brian"));\n\t}\n}\n{\n\t\tSystem.out.println(greet("Anne"));\n\t}\n}\n{\n\t\tSystem.out.println(greet("Faith"));\n\t}\n}\n`,
   csharp: `\nusing System;\n\nclass Program {\n\tstatic void Greet(string name) {\n\t\t// code here\n\t}\n\n\t// don't remove this function call!\n\tstatic void Main() {\n\t\tConsole.WriteLine(Greet("Antony"));\n\t}\n}\n`,
-  php: `\nfunction greet($name) {\n\t// code here\n}\n\n// don't remove this function call!\necho greet("Antony");\n`,
-  ruby: `\ndef greet(name)\n\t# code here\nend\n\n# don't remove this function call!\nputs greet("Antony")\n`,
-  c: `\n#include <stdio.h>\n\nvoid greet(char *name) {\n\t// code here\n}\n\n// don't remove this function call!\nint main() {\n\tprintf("%s", greet("Antony"));\n\treturn 0;\n}\n`,
+  php: `\nfunction greet($name) {\n\t// code here\n}\n\n// don't remove this function call!\necho greet("Antony");\necho greet("Brian");\necho greet("Anne");\necho greet("Faith");\n`,
+  ruby: `\ndef greet(name)\n\t# code here\nend\n\n# don't remove this function call!\nputs greet("Antony")\nputs greet("Brian")\nputs greet("Anne")\nputs greet("Faith")\n`,
+  c: `\n#include <stdio.h>\n\nvoid greet(char *name) {\n\t// code here\n}\n\n// don't remove this function call!\nint main() {\n\tprintf("%s", greet("Antony"));\n\treturn 0;\n}\n{\n\tprintf("%s", greet("Brian"));\n\treturn 0;\n}\n{\n\tprintf("%s", greet("Anne"));\n\treturn 0;\n}\n{\n\tprintf("%s", greet("Faith"));\n\treturn 0;\n}\n`,
 };

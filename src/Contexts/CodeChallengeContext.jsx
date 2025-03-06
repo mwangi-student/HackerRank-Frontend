@@ -7,28 +7,26 @@ export const useCodeChallenges = () => useContext(CodeChallengeContext);
 export const CodeChallengeProvider = ({ children }) => {
   const [codeChallenges, setCodeChallenges] = useState([]);
   const [loading, setLoading] = useState(false);
-  const authToken = localStorage.getItem("token"); // Adjust based on auth setup
+  const authToken = localStorage.getItem("authToken"); // Ensure correct token retrieval
 
   // Fetch all code challenges
   const fetchCodeChallenges = async () => {
     setLoading(true);
     try {
-      const API_URL = "http://127.0.0.1:5000/code-challenges"; // Adjust based on backend URL
-      const authToken = localStorage.getItem("authToken"); // Ensure token is set
-  
+      const API_URL = "http://127.0.0.1:5000/code-challenges";
       if (!authToken) {
         console.error("No auth token found. User may need to log in.");
         return;
       }
-  
+
       const response = await fetch(API_URL, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-  
+
       if (!response.ok) {
         throw new Error(`API error: ${response.status} - ${response.statusText}`);
       }
-  
+
       const data = await response.json();
       setCodeChallenges(data);
     } catch (error) {
@@ -37,7 +35,29 @@ export const CodeChallengeProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
+  // Fetch a single code challenge
+  const getCodeChallenge = async (id) => {
+    try {
+      if (!authToken) {
+        console.error("No auth token found. User may need to log in.");
+        return null;
+      }
+
+      const response = await fetch(`http://127.0.0.1:5000/code-challenges/${id}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching single code challenge:", error);
+      return null;
+    }
+  };
 
 // Create a new code challenge
 const createCodeChallenge = async (challengeData) => {
@@ -70,6 +90,7 @@ const createCodeChallenge = async (challengeData) => {
       const errorData = await response.json();
       console.error("Error creating challenge:", errorData);
       return;
+
     }
 
     fetchCodeChallenges(); // Refresh the challenge list
@@ -82,7 +103,7 @@ const createCodeChallenge = async (challengeData) => {
   // Update a code challenge
   const updateCodeChallenge = async (id, updatedData) => {
     try {
-      await fetch(`/code-challenges/${id}`, {
+      await fetch(`http://127.0.0.1:5000/code-challenges/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +120,7 @@ const createCodeChallenge = async (challengeData) => {
   // Delete a code challenge
   const deleteCodeChallenge = async (id) => {
     try {
-      await fetch(`/code-challenges/${id}`, {
+      await fetch(`http://127.0.0.1:5000/code-challenges/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -115,7 +136,14 @@ const createCodeChallenge = async (challengeData) => {
 
   return (
     <CodeChallengeContext.Provider
-      value={{ codeChallenges, createCodeChallenge, updateCodeChallenge, deleteCodeChallenge, loading }}
+      value={{
+        codeChallenges,
+        getCodeChallenge, // Now available for fetching a single challenge
+        createCodeChallenge,
+        updateCodeChallenge,
+        deleteCodeChallenge,
+        loading,
+      }}
     >
       {children}
     </CodeChallengeContext.Provider>

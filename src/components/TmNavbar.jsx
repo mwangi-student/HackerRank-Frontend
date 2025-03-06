@@ -73,18 +73,6 @@ const Navbar = () => {
                   Students
                 </button>
               </li>
-              <li>
-                <button
-                  className={`text-white hover:text-[#79CCFF] py-4 text-sm ml-6 font-medium ${
-                    activeLink === "/tm/stats"
-                      ? "border-b-2 border-green-500 text-green-500"
-                      : ""
-                  }`}
-                  onClick={() => handleNavClick("/tm/stats")}
-                >
-                  Stats
-                </button>
-              </li>
             </ul>
           </div>
 
