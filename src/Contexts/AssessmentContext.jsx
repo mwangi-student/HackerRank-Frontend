@@ -50,7 +50,7 @@ export const AssessmentProvider = ({ children }) => {
     }
   };
 
-  // Create a new assessment (ensuring tm_id is included)
+  // Create a new assessment (ensuring user_id is included)
   const createAssessment = async (data) => {
     const user = await fetchCurrentUser(); // Fetch user details before creating assessment
     if (!user?.id) {

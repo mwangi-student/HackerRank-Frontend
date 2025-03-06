@@ -272,6 +272,35 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+    // 🔹 Update Current User Function
+  const updateUser = async (updatedUserData) => {
+  try {
+    const response = await fetch("http://127.0.0.1:5000/update_user", {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUserData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user");
+    }
+
+    const updatedUser = await response.json();
+    setCurrentUser(updatedUser); // Update user context with new data
+    localStorage.setItem("user", JSON.stringify(updatedUser)); // Update local storage
+    toast.success("User updated successfully!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating user:", error);
+    toast.error("Failed to update user");
+    return { success: false };
+  }
+  };
+
+
   // 🔹 Providing Context Values
   return (
     <UserContext.Provider
@@ -287,7 +316,10 @@ export const UserProvider = ({ children }) => {
         googleSignIn,
         logOutGoogleUser,
         setCurrentUser, authToken, setAuthToken,
-        fetchCurrentUser
+
+        fetchCurrentUser,
+        updateUser
+
       }}
       // authToken, setAuthToken, currentUser, setCurrentUser, login, googleSignIn
     >
