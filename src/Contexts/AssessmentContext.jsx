@@ -56,24 +56,34 @@ export const AssessmentProvider = ({ children }) => {
     if (!user?.id) {
       return { success: false, message: "Missing required tm_id" };
     }
-
+  
     const requestData = { ...data, tm_id: user.id };
-
+  
     try {
-      const response = await axios.post("http://127.0.0.1:5000/assessment", requestData, {
+      const response = await fetch("http://127.0.0.1:5000/assessment", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(requestData),
       });
-
-      setAssessments((prev) => [...prev, { ...requestData, id: response.data.id }]);
+  
+      if (!response.ok) {
+        const errorData = await response.json(); // Get detailed error message
+        throw new Error(errorData.message || "Failed to create assessment");
+      }
+  
+      const responseData = await response.json();
+      setAssessments((prev) => [...prev, { ...requestData, id: responseData.id }]);
+  
       return { success: true, message: "Assessment created successfully" };
     } catch (error) {
-      console.error("Failed to create assessment", error.response?.data || error.message);
-      return { success: false, message: "Failed to create assessment" };
+      console.error("Failed to create assessment", error.message);
+      return { success: false, message: error.message };
     }
   };
+  
 
   // Update an existing assessment
   const updateAssessment = async (id, data) => {

@@ -122,38 +122,38 @@ export default function AssessmentInviteForm({ isOpen, onClose, onSubmit }) {
   // Send assessment invites
   const sendAssessmentInvite = async (studentIds) => {
     if (!user?.id || !formData.assessment_id) {
-      return { success: false, message: "Missing required invite details" };
+        return { success: false, message: "Missing required invite details" };
     }
 
     const inviteData = {
-      student_ids: studentIds,
-      assessment_id: formData.assessment_id,
-      tm_id: user.id, // Use the current user's ID as the TM ID
-      status: "pending",
+        student_ids: studentIds, // Array of student IDs
+        assessment_id: formData.assessment_id,
+        tm_id: user.id, // Use the current user's ID as the TM ID
+        status: "pending",
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/assessment-invites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify(inviteData),
-      });
+        const response = await fetch("http://127.0.0.1:5000/assessment-invites", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authToken}`,
+            },
+            body: JSON.stringify(inviteData),
+        });
 
-      if (response.ok) {
-        const result = await response.json();
-        return { success: true, message: "Assessment invites sent successfully", data: result };
-      } else {
-        const errorData = await response.json();
-        return { success: false, message: errorData.error || "Failed to send assessment invites" };
-      }
+        if (response.ok) {
+            const result = await response.json();
+            return { success: true, message: "Assessment invites sent successfully", data: result };
+        } else {
+            const errorData = await response.json();
+            return { success: false, message: errorData.error || "Failed to send assessment invites" };
+        }
     } catch (error) {
-      console.error("Failed to send assessment invites", error);
-      return { success: false, message: "Failed to send assessment invites" };
+        console.error("Failed to send assessment invites", error);
+        return { success: false, message: "Failed to send assessment invites" };
     }
-  };
+};
 
   // Fetch data on component mount
   useEffect(() => {
@@ -192,12 +192,12 @@ export default function AssessmentInviteForm({ isOpen, onClose, onSubmit }) {
     e.preventDefault();
     const result = await sendAssessmentInvite(formData.selectedStudents);
     if (result.success) {
-      toast.success(result.message); // Show success toast
-      onClose(); // Close the modal
+        toast.success(result.message); // Show success toast
+        onClose(); // Close the modal
     } else {
-      toast.error(result.message); // Show error toast
+        toast.error(result.message); // Show error toast
     }
-  };
+};
 
   if (!isOpen) return null;
 

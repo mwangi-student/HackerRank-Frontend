@@ -1,52 +1,108 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { AssessmentHeader, CountdownTimer } from "../../components";
 import QuestionsContext from "../../Contexts/QuestionsContext";
 import AssessmentContext from "../../Contexts/AssessmentContext";
 
-
 export default function MCQQuiz() {
   const { getQuestions } = useContext(QuestionsContext); // Fetch questions from context
   const { id } = useParams(); // Get assessment ID from URL
+  const { getAssessment } = useContext(AssessmentContext);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [questions, setQuestions] = useState([])
-  const { getAssessment } = useContext(AssessmentContext);
+  const [questions, setQuestions] = useState([]);
   const [assessment, setAssessment] = useState(null);
-  const [time, setTime] = useState(null)
+  const [time, setTime] = useState(null);
 
-
+  // Fetch questions
   useEffect(() => {
-      const fetchQuestions = async () => {
-        setLoading(true);
-        const data = await getQuestions(id);
-        if (data) setQuestions(data);
-        setLoading(false);
-      };
-      fetchQuestions();
+    const fetchQuestions = async () => {
+      setLoading(true);
+      const data = await getQuestions(id);
+      if (data) setQuestions(data);
+      setLoading(false);
+    };
+    fetchQuestions();
   }, [id, getQuestions]);
-  
-  // Fetch assessment
-    useEffect(() => {
-      const fetchAssessment = async () => {
-        const data = await getAssessment(id);
-        if (data) setAssessment(data);
-      };
-      fetchAssessment();
-    }, [id, getAssessment]);
 
+  // Fetch assessment
+  useEffect(() => {
+    const fetchAssessment = async () => {
+      const data = await getAssessment(id);
+      if (data) {
+        setAssessment(data);
+        setTime(data.time_limit); // Set the time limit for the countdown timer
+      }
+    };
+    fetchAssessment();
+  }, [id, getAssessment]);
+
+  // Handle answer selection
   const handleSelect = (questionIndex, choice) => {
     setAnswers((prev) => ({ ...prev, [questionIndex]: choice }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
+  // Submit MCQ answers to the `mcq-submissions` table
+  const submitMCQAnswers = async (answers) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/mcq-submissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assessmentId: id,
+          answers: Object.entries(answers).map(([questionIndex, choice]) => ({
+            questionId: questions[questionIndex].id, // Assuming each question has an `id`
+            selectedChoice: choice,
+          })),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit MCQ answers");
+      return await response.json();
+    } catch (error) {
+      console.error("Error submitting MCQ answers:", error);
+      return null;
+    }
   };
 
-  if (assessment) {
-    setTime(assessment.time_limit)
-  }
+  // Update the `complete` column in the `assessment-invitation` table
+  const updateAssessmentInvitation = async (complete) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/assessment-invitations/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ complete }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to update assessment invitation");
+    } catch (error) {
+      console.error("Error updating assessment invitation:", error);
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+
+    // Submit MCQ answers
+    const submissionResult = await submitMCQAnswers(answers);
+    if (submissionResult) {
+      // Update assessment invitation to mark as complete
+      await updateAssessmentInvitation(true);
+      alert("Quiz submitted successfully and assessment marked as complete!");
+    } else {
+      alert("Quiz submission failed");
+    }
+  };
 
   return (
     <div>
@@ -57,10 +113,14 @@ export default function MCQQuiz() {
         <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           📝 MCQ Quiz
         </h2>
-        <div><CountdownTimer time={time} /></div>
+        <div>
+          <CountdownTimer time={time} />
+        </div>
 
         {questions.length === 0 ? (
-          <div className="text-center text-gray-500 mt-4">No questions available.</div>
+          <div className="text-center text-gray-500 mt-4">
+            No questions available.
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {questions.map((q, index) => (
@@ -115,7 +175,8 @@ export default function MCQQuiz() {
 
         {submitted && (
           <div className="mt-6 p-5 bg-green-100 text-green-900 rounded-lg text-center shadow-md">
-            ✅ <strong>Quiz submitted successfully!</strong> Thank you for participating.
+            ✅ <strong>Quiz submitted successfully!</strong> Thank you for
+            participating.
           </div>
         )}
       </div>

@@ -221,89 +221,110 @@ function AssessmentForm({ onClose }) {
 
     // Create a code challenge
     const createCodeChallenge = async (challengeData) => {
-        const token = localStorage.getItem("token");
-        if (!token) return { success: false, message: "Missing token" };
-
-        const payload = {
-            assessment_id: challengeData.assessment_id,
-            task: challengeData.task,
-            example: challengeData.example,
-            input_format: challengeData.inputFormat,
-            output_format: challengeData.outputFormat,
-            constraints: challengeData.constraints,
-            sample_input_1: challengeData.sampleInput_1,
-            sample_input_2: challengeData.sampleInput_2,
-            sample_input_3: challengeData.sampleInput_3,
-            sample_input_4: challengeData.sampleInput_4,
-            sample_output_1: challengeData.sample_output_1,
-            sample_output_2: challengeData.sample_output_2,
-            sample_output_3: challengeData.sample_output_3,
-            sample_output_4: challengeData.sample_output_4,
-        };
-
+        const authToken = localStorage.getItem("token"); // Retrieve token from localStorage
+    
         try {
+            console.log("Sending payload:", {
+                assessment_id: challengeData.assessment_id,
+                task: challengeData.task,
+                example: challengeData.example,
+                input_format: challengeData.inputFormat,
+                output_format: challengeData.outputFormat,
+                constraints: challengeData.constraints,
+                sample_input_1: challengeData.sampleInput_1,
+                sample_input_2: challengeData.sampleInput_2,
+                sample_input_3: challengeData.sampleInput_3,
+                sample_input_4: challengeData.sampleInput_4,
+                sample_output_1: challengeData.sample_output_1,
+                sample_output_2: challengeData.sample_output_2,
+                sample_output_3: challengeData.sample_output_3,
+                sample_output_4: challengeData.sample_output_4,
+            });
+    
             const response = await fetch("http://127.0.0.1:5000/code-challenges", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
+                    Authorization: `Bearer ${authToken}`,
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({
+                    assessment_id: challengeData.assessment_id,
+                    task: challengeData.task,
+                    example: challengeData.example,
+                    input_format: challengeData.inputFormat,
+                    output_format: challengeData.outputFormat,
+                    constraints: challengeData.constraints,
+                    sample_input_1: challengeData.sampleInput_1,
+                    sample_input_2: challengeData.sampleInput_2,
+                    sample_input_3: challengeData.sampleInput_3,
+                    sample_input_4: challengeData.sampleInput_4,
+                    sample_output_1: challengeData.sample_output_1,
+                    sample_output_2: challengeData.sample_output_2,
+                    sample_output_3: challengeData.sample_output_3,
+                    sample_output_4: challengeData.sample_output_4,
+                }),
             });
-
-            if (!response.ok) return { success: false, message: "Failed to create code challenge" };
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error creating challenge:", errorData);
+                return { success: false, message: errorData.error || "Failed to create challenge" };
+            }
+    
             return { success: true, message: "Code challenge created successfully" };
         } catch (error) {
             console.error("Error creating challenge:", error);
             return { success: false, message: "Error creating challenge" };
         }
     };
-
     // Handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const assessmentId = await fetchAssessmentId(formData.title);
         if (!assessmentId) {
             toast.error("Assessment not found!");
             return;
         }
-
+    
+        let result;
+    
         if (formData.assessmentType === "mcq") {
             const mcqQuestions = formData.mcqQuestions.map((question) => ({
                 question: question.question,
                 choices: question.choices,
                 correctAnswer: question.correctAnswer,
             }));
-
-            const result = await submitMCQQuestions(mcqQuestions, assessmentId);
+    
+            result = await submitMCQQuestions(mcqQuestions, assessmentId);
             if (!result.success) {
                 toast.error("Failed to submit MCQs.");
                 return;
             }
-            toast.success("MCQs submitted successfully!");
         } else if (formData.assessmentType === "code") {
-            const codeChallengeData = formData.codeChallenge;
-            const result = await createCodeChallenge({ ...codeChallengeData, assessment_id: assessmentId });
+            const codeChallengeData = {
+                ...formData.codeChallenge,
+                assessment_id: assessmentId,
+            };
+    
+            result = await createCodeChallenge(codeChallengeData);
             if (!result.success) {
-                toast.error("Failed to submit code challenge.");
+                toast.error(result.message || "Failed to submit code challenge.");
                 return;
             }
-            toast.success("Code challenge submitted successfully!");
         }
-
+    
         if (formData.publish) {
             const updateResult = await updateAssessment(assessmentId, { publish: true });
             if (!updateResult.success) {
                 toast.error("Failed to publish assessment.");
                 return;
             }
-            toast.success("Assessment published successfully!");
         }
-
-        onClose(); // Close the modal after submission
+    
+        toast.success("Assessment submitted successfully!");
+        onClose();
     };
-
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-lg max-h-[90vh] overflow-auto">
@@ -407,120 +428,120 @@ function AssessmentForm({ onClose }) {
                     {formData.assessmentType === "code" && (
                         <div className="bg-gray-100 p-4 rounded-lg">
                             <h3 className="text-lg font-semibold mb-2">Coding Challenge</h3>
-                            <textarea
-                                name="task"
-                                placeholder="Task Description"
-                                value={formData.codeChallenge.task}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            ></textarea>
-                            <textarea
-                                name="example"
-                                placeholder="Example"
-                                value={formData.codeChallenge.example}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            ></textarea>
-                            <input
-                                type="text"
-                                name="inputFormat"
-                                placeholder="Input Format"
-                                value={formData.codeChallenge.inputFormat}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="outputFormat"
-                                placeholder="Output Format"
-                                value={formData.codeChallenge.outputFormat}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="constraints"
-                                placeholder="Constraints (Optional)"
-                                value={formData.codeChallenge.constraints}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                            />
-                            <input
-                                type="text"
-                                name="sampleInput_1"
-                                placeholder="Sample Input_1"
-                                value={formData.codeChallenge.sampleInput_1}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sampleInput_2"
-                                placeholder="Sample Input_2"
-                                value={formData.codeChallenge.sampleInput_2}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sampleInput_3"
-                                placeholder="Sample Input_3"
-                                value={formData.codeChallenge.sampleInput_3}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sampleInput_4"
-                                placeholder="Sample Input_4"
-                                value={formData.codeChallenge.sampleInput_4}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sample_output_1"
-                                placeholder="Sample Output_1"
-                                value={formData.codeChallenge.sample_output_1}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sample_output_2"
-                                placeholder="Sample Output_2"
-                                value={formData.codeChallenge.sample_output_2}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sample_output_3"
-                                placeholder="Sample Output_3"
-                                value={formData.codeChallenge.sample_output_3}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="sample_output_4"
-                                placeholder="Sample Output_1"
-                                value={formData.codeChallenge.sample_output_4}
-                                onChange={handleCodeChange}
-                                className="border p-2 rounded-lg w-full"
-                                required
-                            />
+                                                <textarea
+                        name="task"
+                        placeholder="Task Description"
+                        value={formData.codeChallenge.task}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        ></textarea>
+                        <textarea
+                        name="example"
+                        placeholder="Example"
+                        value={formData.codeChallenge.example}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        ></textarea>
+                        <input
+                        type="text"
+                        name="inputFormat"
+                        placeholder="Input Format"
+                        value={formData.codeChallenge.inputFormat}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="outputFormat"
+                        placeholder="Output Format"
+                        value={formData.codeChallenge.outputFormat}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="constraints"
+                        placeholder="Constraints (Optional)"
+                        value={formData.codeChallenge.constraints}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        />
+                        <input
+                        type="text"
+                        name="sampleInput_1"
+                        placeholder="Sample Input_1"
+                        value={formData.codeChallenge.sampleInput_1}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sampleInput_2"
+                        placeholder="Sample Input_2"
+                        value={formData.codeChallenge.sampleInput_2}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sampleInput_3"
+                        placeholder="Sample Input_3"
+                        value={formData.codeChallenge.sampleInput_3}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sampleInput_4"
+                        placeholder="Sample Input_4"
+                        value={formData.codeChallenge.sampleInput_4}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sample_output_1"
+                        placeholder="Sample Output_1"
+                        value={formData.codeChallenge.sample_output_1}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sample_output_2"
+                        placeholder="Sample Output_2"
+                        value={formData.codeChallenge.sample_output_2}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sample_output_3"
+                        placeholder="Sample Output_3"
+                        value={formData.codeChallenge.sample_output_3}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
+                        <input
+                        type="text"
+                        name="sample_output_4"
+                        placeholder="Sample Output_4"
+                        value={formData.codeChallenge.sample_output_4}
+                        onChange={handleCodeChange}
+                        className="border p-2 rounded-lg w-full"
+                        required
+                        />
                         </div>
                     )}
 

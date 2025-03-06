@@ -1,7 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { userScores } from "../data/user-scores";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function UserAssessmentList() {
+  const navigate = useNavigate();
+  const [submissions, setSubmissions] = useState([]);
+  const [authToken, setAuthToken] = useState(localStorage.getItem("authToken"));
+
+  // Fetch all assessment submissions
+  useEffect(() => {
+    if (authToken) {
+      axios.get("http://127.0.0.1:5000/submission", {
+        headers: { Authorization: `Bearer ${authToken}` }
+      })
+      .then((response) => setSubmissions(response.data))
+      .catch((error) => console.error("Failed to fetch submissions", error));
+    }
+  }, [authToken]);
+
+  const handleViewScore = (submissionId) => {
+    const submission = submissions.find(sub => sub.id === submissionId);
+    if (submission) {
+      if (submission.assessmentType === "code-challenge") {
+        navigate("/grade/challenge", { state: { submission } });
+      } else if (submission.assessmentType === "mcq-assessment-type") {
+        navigate("/grade/mcquestions", { state: { submission } });
+      }
+    }
+  };
+
   return (
     <div className="flex-wrap gap-5">
       <h5 className="text-2xl text-semibold">Students</h5>
@@ -26,7 +54,10 @@ export default function UserAssessmentList() {
                 <h3>{user.name}</h3>
                 <div className="flex flex-row gap-12">
                   <span className="font-medium">{user.scores}%</span>
-                  <button className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250">
+                  <button 
+                    onClick={() => handleViewScore(user.id)} 
+                    className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250"
+                  >
                     view solution
                   </button>
                 </div>

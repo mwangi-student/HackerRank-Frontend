@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import AssessmentInviteForm from "./AssessmentInviteForm";
 import AssessmentContext from "../Contexts/AssessmentContext";
@@ -7,6 +8,7 @@ export default function PublishedAssessments() {
   const { authToken } = useContext(AssessmentContext); // Get authToken from context
   const [assessments, setAssessments] = useState([]);
   const [isInvitePopupOpen, setIsInvitePopupOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchAssessments = async () => {
@@ -56,10 +58,13 @@ export default function PublishedAssessments() {
                 key={assessment.id} // Use unique ID from API
                 className="flex justify-between gap-x-6 py-3 hover:bg-[#ebebf3] px-5"
               >
-                    <h3>{assessment.title}</h3>
-                <button onClick={navigate("/assessment/statistics")} className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250">
-            view
-          </button>
+                <h3>{assessment.title}</h3>
+                <button 
+                  onClick={() => navigate("/assessment/statistics")} // Wrap navigate in an arrow function
+                  className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250"
+                >
+                  view
+                </button>
               </li>
             ))}
           </ul>

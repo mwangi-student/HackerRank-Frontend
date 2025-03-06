@@ -35,38 +35,38 @@ export const AssessmentInviteProvider = ({ children }) => {
     }, [authToken]);
 
     // Function to send an assessment invite
-    const sendAssessmentInvite = async () => {
-        if (!user?.id || !currentAssessment?.assessment_id || !currentAssessment?.tm_id) {
+    const sendAssessmentInvite = async (studentIds) => {
+        if (!user?.id || !formData.assessment_id) {
             return { success: false, message: "Missing required invite details" };
         }
-
+    
         const inviteData = {
-            student_id: user.id,
-            assessment_id: currentAssessment.assessment_id,
-            tm_id: currentAssessment.tm_id
+            student_ids: studentIds, // Array of student IDs
+            assessment_id: formData.assessment_id,
+            tm_id: user.id, // Use the current user's ID as the TM ID
+            status: "pending",
         };
-
+    
         try {
             const response = await fetch("http://127.0.0.1:5000/assessment-invites", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}`
+                    Authorization: `Bearer ${authToken}`,
                 },
-                body: JSON.stringify(inviteData)
+                body: JSON.stringify(inviteData),
             });
-
+    
             if (response.ok) {
-                const newInvite = await response.json();
-                setAssessmentInvites((prevInvites) => [...prevInvites, newInvite]);
-                return { success: true, message: "Assessment invite sent successfully" };
+                const result = await response.json();
+                return { success: true, message: "Assessment invites sent successfully", data: result };
             } else {
                 const errorData = await response.json();
-                return { success: false, message: errorData.error || "Failed to send assessment invite" };
+                return { success: false, message: errorData.error || "Failed to send assessment invites" };
             }
         } catch (error) {
-            console.error("Failed to send assessment invite", error);
-            return { success: false, message: "Failed to send assessment invite" };
+            console.error("Failed to send assessment invites", error);
+            return { success: false, message: "Failed to send assessment invites" };
         }
     };
 
