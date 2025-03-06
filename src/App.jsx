@@ -9,10 +9,8 @@ import { AssessmentSubmissionProvider } from "./Contexts/AssessmentSubmissionCon
 import { CodeChallengeProvider } from "./Contexts/CodeChallengeContext";
 import PublicRoute from "./Contexts/PublicRoute";
 
-import Discover from "./pages/student/Discover";
 import Home from "./pages/student/Home";
 import Prepare from "./pages/student/Prepare";
-import Leaderboard from "./pages/student/Leaderboard";
 import Challenges from "./pages/student/Challenges";
 import PasswordReset from "./pages/PasswordReset";
 import PasswordResetForm from "./pages/PassworResetForm"
@@ -23,6 +21,8 @@ import CodeChallenge from "./pages/student/CodeChallenge";
 import MCQQuiz from "./pages/student/McqQuiz";
 import McqResults from "./pages/student/McqResults";
 import AssessmentsStatistics from "./pages/tm/AssessmentsStatistics";
+import McqGradeSubmission from "./pages/tm/McqGradeSubmission";
+import ChallengeGradeSubmission from "./pages/tm/ChallengeGradeSubmission";
 
 function App() {
   return (
@@ -37,21 +37,20 @@ function App() {
                   <Routes>
                     {/* Public routes (only for non-logged-in users) */}
                     <Route path="/" element={<PublicRoute element={<Home />} />} />
-                    <Route path="/discover" element={<PublicRoute element={<Discover />} />} />
-
                     {/* Private routes (for authenticated users) */}
                     <Route path="/prepare" element={<Prepare />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/practice/:language" element={<Challenges />} />
                     <Route path="/password-reset" element={<PasswordReset />} />
                     <Route path="/reset-password/:token" element={<PasswordResetForm />} />
                     <Route path="/tm/assessments" element={<AdminAssessment />} />
                     <Route path="/tm/students" element={<Students />} />
                     <Route path="/practice/code" element={<TakeChallenge />} />
-                    <Route path="/assessment/challenge" element={<CodeChallenge />} />
+                    <Route path="/assessment/challenge/:id" element={<CodeChallenge />} />
                     <Route path="/assessment/mcquestions/:id" element={<MCQQuiz />} />
                     <Route path="/assessment/mcqresults" element={<McqResults />} />
                     <Route path="/assessment/statistics" element={<AssessmentsStatistics />} />
+                    <Route path="/grade/mcquestions" element={<McqGradeSubmission />} />
+                    <Route path="/grade/challenge" element={<ChallengeGradeSubmission />} />
                   </Routes>
                 </Router>
               </CodeChallengeProvider>
