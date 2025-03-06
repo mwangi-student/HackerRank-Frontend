@@ -11,6 +11,8 @@ export default function CodeChallenge() {
   const [assessment, setAssessment] = useState(null);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [time, setTime] = useState(null)
+  
 
   // Fetch challenge
   useEffect(() => {
@@ -31,6 +33,10 @@ export default function CodeChallenge() {
     };
     fetchAssessment();
   }, [id, getAssessment]);
+
+  if (assessment) {
+    setTime(assessment.time_limit)
+  }
 
   if (loading) return <div className="text-white p-6">Loading...</div>;
   if (!selectedChallenge) return <div className="text-red-500 p-6">Challenge not found</div>;

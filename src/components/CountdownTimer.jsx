@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 export default function CountdownTimer() {
-  //   const [hours, setHours] = useState("");
-  //   const [minutes, setMinutes] = useState("");
-  //   const [seconds, setSeconds] = useState("");
-  const hours = 1;
-  const minutes = 30;
-  const seconds = 0;
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [isRunning, setIsRunning] = useState(false);
+  const [inputMinutes, setInputMinutes] = useState(""); // User enters time in minutes
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });  const [isRunning, setIsRunning] = useState(false);
   const [timerId, setTimerId] = useState(null);
 
   useEffect(() => {
@@ -24,7 +14,7 @@ export default function CountdownTimer() {
           if (hours === 0 && minutes === 0 && seconds === 0) {
             clearInterval(id);
             setIsRunning(false);
-            submitQuiz(); // Auto-submit when time runs out
+            submitQuiz(); // Auto-submit when timer reaches zero
             return prevTime;
           }
 
@@ -48,20 +38,27 @@ export default function CountdownTimer() {
     }
   }, [isRunning]);
 
-  const startTimer = () => {
-    const h = parseInt(hours) || 0;
-    const m = parseInt(minutes) || 0;
-    const s = parseInt(seconds) || 0;
-    const totalSeconds = h * 3600 + m * 60 + s;
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsRunning(false); // Pause the timer when tab is inactive
+      } else {
+        setIsRunning(true); // Resume the timer when tab is active
+      }
+    };
 
-    if (totalSeconds > 0) {
-      setTimeLeft({ hours: h, minutes: m, seconds: s });
-      setIsRunning(true);
-    } else {
-      alert("Please enter a valid time.");
-    }
-  };
+    const handleFocus = () => {
+      setIsRunning(true); // Ensure it resumes when user switches back to the tab
+    };
 
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
   const submitQuiz = () => {
     setIsRunning(false);
     if (timerId) clearInterval(timerId);

@@ -11,6 +11,10 @@ export default function MCQQuiz() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([])
+  const { getAssessment } = useContext(AssessmentContext);
+  const [assessment, setAssessment] = useState(null);
+  const [time, setTime] = useState(null)
+
 
   useEffect(() => {
       const fetchQuestions = async () => {
@@ -20,7 +24,16 @@ export default function MCQQuiz() {
         setLoading(false);
       };
       fetchQuestions();
-    }, [id, getQuestions]);
+  }, [id, getQuestions]);
+  
+  // Fetch assessment
+    useEffect(() => {
+      const fetchAssessment = async () => {
+        const data = await getAssessment(id);
+        if (data) setAssessment(data);
+      };
+      fetchAssessment();
+    }, [id, getAssessment]);
 
   const handleSelect = (questionIndex, choice) => {
     setAnswers((prev) => ({ ...prev, [questionIndex]: choice }));
@@ -31,16 +44,20 @@ export default function MCQQuiz() {
     setSubmitted(true);
   };
 
+  if (assessment) {
+    setTime(assessment.time_limit)
+  }
+
   return (
     <div>
       <div className="fixed top-0 w-full z-[100]">
-        <AssessmentHeader />
+        <AssessmentHeader assessment={assessment} />
       </div>
       <div className="font-[Montserrat] p-8 max-w-2xl mx-auto bg-gray-50 shadow-lg rounded-lg border border-gray-200 mt-14">
         <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           📝 MCQ Quiz
         </h2>
-        <div><CountdownTimer /></div>
+        <div><CountdownTimer time={time} /></div>
 
         {questions.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">No questions available.</div>
@@ -52,7 +69,7 @@ export default function MCQQuiz() {
                 className="p-5 bg-white border border-gray-300 rounded-lg shadow-md"
               >
                 <p className="font-semibold text-lg mb-3">
-                  {index + 1}. {q.question}
+                  {index + 1}. {q.question_text}
                 </p>
                 <div className="mt-2 space-y-2">
                   {Object.entries(q.choices).map(([key, choice]) => (

@@ -23,6 +23,8 @@ import McqResults from "./pages/student/McqResults";
 import AssessmentsStatistics from "./pages/tm/AssessmentsStatistics";
 import McqGradeSubmission from "./pages/tm/McqGradeSubmission";
 import ChallengeGradeSubmission from "./pages/tm/ChallengeGradeSubmission";
+import CodeSubmissionProvider from "./Contexts/CodeSubmissionContext";
+import MCQSubmissionProvider from "./Contexts/MCQSubmissionContext";
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
           <AssessmentInviteProvider>
             <AssessmentSubmissionProvider>
               <CodeChallengeProvider>
+                <CodeSubmissionProvider>
+                  <MCQSubmissionProvider>
                 <Router>
                   <ToastContainer position="top-right" autoClose={3000} />
                   <Routes>
@@ -52,7 +56,9 @@ function App() {
                     <Route path="/grade/mcquestions" element={<McqGradeSubmission />} />
                     <Route path="/grade/challenge" element={<ChallengeGradeSubmission />} />
                   </Routes>
-                </Router>
+                    </Router>
+                    </MCQSubmissionProvider>
+                </CodeSubmissionProvider>
               </CodeChallengeProvider>
             </AssessmentSubmissionProvider>
           </AssessmentInviteProvider>
