@@ -28,6 +28,9 @@ export default function ChallengeGradeSubmission() {
 
   return (
     <div className="bg-[#ededed] font-[Montserrat] flex flex-col min-h-screen w-full">
+      <div className="fixed top-0 w-full z-[100]">
+        <TmNavbar />
+      </div>
       <div className="flex flex-row gap-5 py-[5%] pl-[10%] pr-[17%]">
         <div className="w-[900px] p-6">
           <h2 className="text-3xl font-bold text-[#014C06]">
