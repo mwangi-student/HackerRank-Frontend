@@ -12,7 +12,7 @@ export default function AssessmentList() {
   }, [authToken]);
 
   const handleTakeAssessment = (type, id) => {
-    if (type === "code challenge") {
+    if (type === "challenge") {
       navigate(`/assessment/challenge/${id}`);
     } else if (type === "mcquestion") {
       navigate(`/assessment/mcquestions/${id}`);

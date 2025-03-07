@@ -60,8 +60,8 @@ export default function StudentList() {
                 <h3>{student.username}</h3>
                 <h3>{student.email}</h3>
 
-                <button className="px-3 py-2 rounded-lg text-white bg-[#527254] hover:bg-[#13813A] transition duration-250">
-                  view
+                <button className="px-3 py-2 rounded-lg text-white bg-red-700 hover:bg-red-500 transition duration-250">
+                  drop
                 </button>
               </li>
             ))}

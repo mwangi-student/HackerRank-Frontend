@@ -1,4 +1,5 @@
 import React from "react";
+import { ViewFeedback, AssessmentHeader } from "../../components";
 
 const mcqQuestions = [
   {
@@ -41,7 +42,7 @@ const mcqQuestions = [
 // Example: User's selected answers (Modify this for testing)
 const userAnswers = ["B", "B", "A", "B", "C"];
 
-export default function QuizResults() {
+export default function McqGradeSubmission() {
   const totalQuestions = mcqQuestions.length;
   const correctCount = mcqQuestions.reduce(
     (acc, q, index) => (userAnswers[index] === q.correctAnswer ? acc + 1 : acc),
@@ -49,64 +50,88 @@ export default function QuizResults() {
   );
   const scorePercentage = ((correctCount / totalQuestions) * 100).toFixed(2);
 
+  // Determine Grade
+  let grade;
+  if (scorePercentage >= 70) grade = "A";
+  else if (scorePercentage >= 60) grade = "B";
+  else if (scorePercentage >= 50) grade = "C";
+  else if (scorePercentage >= 40) grade = "D";
+  else grade = "E";
+
   return (
-    <div>
+    <div className="bg-[#F3F5FF] font-[Montserrat] flex flex-col min-h-screen w-full">
       <div className="fixed top-0 w-full z-[100]">
         <AssessmentHeader />
       </div>
-      <div className="font-[Montserrat] w-[full mx-auto p-6 px-40 bg-[#F3F5FF] shadow-lg rounded-lg">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
-          📊 Quiz Results
-        </h2>
-
-        {/* Left Sidebar for Score */}
-        <div className="flex">
-          <div className="w-1/3 bg-white p-5 rounded-lg shadow-md border border-gray-300">
-            <h3 className="text-xl font-semibold text-gray-800">Your Score</h3>
-            <div></div>
-            <p className="text-4xl font-bold text-blue-600 mt-2">
-              {correctCount} out of {totalQuestions}
-            </p>
-            <p className="text-lg text-gray-700 mt-1">{scorePercentage}%</p>
-          </div>
-
-          {/* Right Section - Answer Review */}
-          <div className="w-2/3 pl-6">
-            {mcqQuestions.map((q, index) => {
-              const isCorrect = userAnswers[index] === q.correctAnswer;
-              return (
-                <div
-                  key={index}
-                  className="p-4 mb-4 bg-white border rounded-lg shadow-md"
-                >
-                  <p className="font-semibold text-lg">
-                    {index + 1}. {q.question}
-                  </p>
-                  <div className="mt-2">
-                    {Object.entries(q.choices).map(([key, choice]) => (
-                      <p
-                        key={key}
-                        className={`p-2 rounded-lg ${
-                          userAnswers[index] === key
-                            ? isCorrect
-                              ? "bg-green-100 text-green-800 font-bold"
-                              : "bg-red-100 text-red-800 font-bold"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {key}: {choice} {q.correctAnswer === key && ""}
-                      </p>
-                    ))}
-                  </div>
-                  {!isCorrect && (
-                    <p className="mt-2 text-red-600 font-semibold">
-                      Correct Answer: {q.correctAnswer} -{" "}
-                      {q.choices[q.correctAnswer]}
+      <div className="flex flex-row gap-5 py-[5%] pl-[10%] pr-[17%]">
+        <div className="w-[900px] p-6">
+          <h2 className="text-3xl text-bold text-[#014C06]">
+            Assessment Submission
+          </h2>
+          <hr className="w-32 border-gray-400 border-2 my-2" />
+          <p className="font-medium text-lg text-[#014C06]">
+            Check students solution for the assessment.
+          </p>
+          {mcqQuestions.map((q, index) => {
+            const isCorrect = userAnswers[index] === q.correctAnswer;
+            return (
+              <div
+                key={index}
+                className="p-4 mb-4 border rounded-lg shadow-md w-[500px]"
+              >
+                <p className="font-semibold text-lg">
+                  {index + 1}. {q.question}
+                </p>
+                <div className="mt-2">
+                  {Object.entries(q.choices).map(([key, choice]) => (
+                    <p
+                      key={key}
+                      className={`p-2 rounded-lg ${
+                        userAnswers[index] === key
+                          ? isCorrect
+                            ? "bg-green-100 text-green-800 font-bold"
+                            : "bg-red-100 text-red-800 font-bold"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {key}: {choice}
                     </p>
-                  )}
+                  ))}
                 </div>
-              );
-            })}
+                {!isCorrect && (
+                  <p className="mt-2 text-red-600 font-semibold">
+                    Correct Answer: {q.correctAnswer} -{" "}
+                    {q.choices[q.correctAnswer]}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          <h2 className="text-3xl text-bold text-[#014C06] mb-4">
+            Overall Score & Grade
+          </h2>
+          <div className="min-w-[300px] h-[250px] rounded-lg shadow-md flex flex-col justify-center items-center p-6">
+            <div className="flex flex-row gap-2 mb-4">
+              <span className="text-2xl font-medium mt-2">
+                Correct Questions:
+              </span>
+              <p className="text-2xl font-bold mt-2">
+                {correctCount} out of {totalQuestions}
+              </p>
+            </div>
+            <div className="flex flex-row gap-2 mb-4">
+              <span className="text-2xl font-medium mt-2">Percentage: </span>
+              <p className="text-2xl font-bold mt-2">{scorePercentage}%</p>
+            </div>
+            <div className="flex flex-row gap-2">
+              <span className="text-2xl font-medium mt-2">Grade: </span>
+              <p className="text-2xl font-bold mt-2">{grade}</p>
+            </div>
+          </div>
+          <div className="min-w-[300px] h-[250px] rounded-lg shadow-md flex flex-col justify-center items-center p-6">
+            <ViewFeedback />
           </div>
         </div>
       </div>

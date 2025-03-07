@@ -19,5 +19,6 @@ import CountdownTimer from "./CountdownTimer";
 import UserAssessmentList from "./UserAssessmentList";
 import GradeSection from "./GradeSection";
 import CreateFeedback from "./CreateFeedback";
+import ViewFeedback from "./ViewFeedback";
 
-export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList, CodeEditor, ChallengeQuestion, ChallengeHeader, AssessmentHeader, CountdownTimer, UserAssessmentList, GradeSection, CreateFeedback };
+export { Banner, Footer, Navbar, Header, Contests, AssessmentList, Tests, ChallengesList, SortChallenge, TmNavbar, UnpublishedAssessments, PublishedAssessments, StudentList, CodeEditor, ChallengeQuestion, ChallengeHeader, AssessmentHeader, CountdownTimer, UserAssessmentList, GradeSection, CreateFeedback, ViewFeedback};
