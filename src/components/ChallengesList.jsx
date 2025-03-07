@@ -38,7 +38,7 @@ export default function ChallengesList({ language }) {
                 </p>
               </div>
             </div>
-            <button className="border border-gray-400 hover:border-sky-500 px-2 rounded-lg" onClick={() => { navigate("/code") }}>
+            <button className="border border-gray-400 hover:border-sky-500 px-2 rounded-lg" onClick={() => { navigate("/practice/code") }}>
               Solve Challenge
             </button>
           </div>
