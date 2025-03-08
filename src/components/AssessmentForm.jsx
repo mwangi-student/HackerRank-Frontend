@@ -281,49 +281,102 @@ function AssessmentForm({ onClose }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
     
-        const assessmentId = await fetchAssessmentId(formData.title);
-        if (!assessmentId) {
-            toast.error("Assessment not found!");
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("You must be logged in to create an assessment.");
             return;
         }
     
-        let result;
-    
-        if (formData.assessmentType === "mcq") {
-            const mcqQuestions = formData.mcqQuestions.map((question) => ({
-                question: question.question,
-                choices: question.choices,
-                correctAnswer: question.correctAnswer,
-            }));
-    
-            result = await submitMCQQuestions(mcqQuestions, assessmentId);
-            if (!result.success) {
-                toast.error("Failed to submit MCQs.");
-                return;
-            }
-        } else if (formData.assessmentType === "code") {
-            const codeChallengeData = {
-                ...formData.codeChallenge,
-                assessment_id: assessmentId,
+        try {
+            // Prepare the assessment data
+            const assessmentData = {
+                title: formData.title,
+                description: "Your description here", // Add a description field if needed
+                difficulty: "Medium", // Set the difficulty level
+                category: "General", // Set the category
+                assessment_type: formData.assessmentType,
+                publish: formData.publish,
+                constraints: "Your constraints here", // Add constraints if needed
+                time_limit: 60, // Set the time limit
             };
     
-            result = await createCodeChallenge(codeChallengeData);
-            if (!result.success) {
-                toast.error(result.message || "Failed to submit code challenge.");
+            // Send the assessment data to the Flask backend
+            const response = await fetch("http://127.0.0.1:5000/assessment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify(assessmentData),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                toast.error(errorData.error || "Failed to create assessment.");
                 return;
             }
-        }
     
-        if (formData.publish) {
-            const updateResult = await updateAssessment(assessmentId, { publish: true });
-            if (!updateResult.success) {
-                toast.error("Failed to publish assessment.");
-                return;
+            const assessment = await response.json();
+    
+            // If the assessment is successfully created, proceed to add questions or code challenges
+            if (formData.assessmentType === "mcq") {
+                const mcqQuestions = formData.mcqQuestions.map((question) => ({
+                    assessment_id: assessment.id,
+                    question_text: question.question,
+                    choice_a: question.choices.a,
+                    choice_b: question.choices.b,
+                    choice_c: question.choices.c,
+                    choice_d: question.choices.d,
+                    correct_answer: question.correctAnswer,
+                }));
+    
+                for (let question of mcqQuestions) {
+                    const result = await addQuestion(question);
+                    if (!result.success) {
+                        toast.error("Failed to submit MCQs.");
+                        return;
+                    }
+                }
+            } else if (formData.assessmentType === "code") {
+                const codeChallengeData = {
+                    assessment_id: assessment.id,
+                    task: formData.codeChallenge.task,
+                    example: formData.codeChallenge.example,
+                    input_format: formData.codeChallenge.inputFormat,
+                    output_format: formData.codeChallenge.outputFormat,
+                    constraints: formData.codeChallenge.constraints,
+                    sample_input_1: formData.codeChallenge.sampleInput_1,
+                    sample_input_2: formData.codeChallenge.sampleInput_2,
+                    sample_input_3: formData.codeChallenge.sampleInput_3,
+                    sample_input_4: formData.codeChallenge.sampleInput_4,
+                    sample_output_1: formData.codeChallenge.sample_output_1,
+                    sample_output_2: formData.codeChallenge.sample_output_2,
+                    sample_output_3: formData.codeChallenge.sample_output_3,
+                    sample_output_4: formData.codeChallenge.sample_output_4,
+                };
+    
+                const result = await createCodeChallenge(codeChallengeData);
+                if (!result.success) {
+                    toast.error(result.message || "Failed to submit code challenge.");
+                    return;
+                }
             }
-        }
     
-        toast.success("Assessment submitted successfully!");
-        onClose();
+            // If the assessment is to be published, update the publish status
+            if (formData.publish) {
+                const updateResult = await updateAssessment(assessment.id, { publish: true });
+                if (!updateResult.success) {
+                    toast.error("Failed to publish assessment.");
+                    return;
+                }
+            }
+    
+            toast.success("Assessment created and submitted successfully!");
+            onClose();
+        } catch (error) {
+            console.error("Error creating assessment:", error);
+            toast.error("An error occurred while creating the assessment.");
+        }
     };
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
