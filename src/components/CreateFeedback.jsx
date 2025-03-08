@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { useFeedback } from "../context/FeedbackContext"; // Import the FeedbackContext hook
+import React, { useState, useContext } from "react";
+import  FeedbackContext  from "../Contexts/FeedbackContext"; // Import the FeedbackContext hook
 
 export default function CreateFeedback() {
   const [feedbackText, setFeedbackText] = useState("");
   const [message, setMessage] = useState(null);
-  const { submitFeedback, loading } = useFeedback(); // Get function from context
+  const { submitFeedback, loading } = useContext(FeedbackContext); // Get function from context
 
   const handleSubmit = async () => {
     if (!feedbackText.trim()) {
